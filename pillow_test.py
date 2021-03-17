@@ -1,20 +1,21 @@
 import os
 import tkinter as tk
 from tkinter import colorchooser
-from PIL import Image, ImageChops, ImageOps, ImageTk, ImageColor, ImageEnhance, ImageDraw
-from enum import Enum
+from PIL import (
+    Image, ImageChops, ImageOps, ImageTk, ImageColor, ImageEnhance, ImageDraw)
 from functools import partial
 from tkinter import filedialog
 
 path = os.path.dirname(__file__)
 OPEN_FILETYPES = (
+    ("all", "*.*"),
     ("Direct Draw Surface", "dds"),
     ("Portable Network Graphics", "png"),
     ("JPEG Image", "jpg"),
     ("Bitmap", "bmp"),
     ("True Vision Targa", "tga"),
     ("Blizzard Texture", "blp")
-    )
+)
 SAVE_FILETYPES = (
     ("Portable Network Graphics", "png"),
     ("JPEG Image", "jpg"),
@@ -29,13 +30,14 @@ def create_placeholder_img():
     d1.text((128, 128), "Diffuse PlaceHolder")
     return img
 
+
 class ArmyPainter(tk.Tk):
     def __init__(self):
         super().__init__()
 
         self.geometry("1000x1000")
         self.title("Army Painter")
-        self.tem_channels= []
+        self.tem_channels = []
 
         # Frame IMG
         self.frame_img = tk.Frame(self)
@@ -54,7 +56,8 @@ class ArmyPainter(tk.Tk):
         self.label_img_dif = tk.Label(self.frame_img, image=self.img_dif)
         self.label_img_dif.pack(side=tk.TOP)
 
-        self.img_tem = ImageTk.PhotoImage(create_placeholder_img())
+        self.img_og_tem = create_placeholder_img()
+        self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
         # LABEL SETTING TEM
         self.label_text_tem = tk.Label(self.frame_text, text="Img tem")
         self.label_text_tem.pack(side=tk.BOTTOM)
@@ -68,7 +71,6 @@ class ArmyPainter(tk.Tk):
         self.lb.insert(2, "2 Blue")
         self.lb.insert(3, "3 Alpha")
         self.lb.pack(side=tk.BOTTOM)
-        self.lb.selection_set(first=0, last=3)
         self.bind("<<ListboxSelect>>", self.select_channel)
 
         # Color Dialog that open upon btn click
@@ -106,7 +108,6 @@ class ArmyPainter(tk.Tk):
             command=self.adjust_brightness,
         )
         self.brightness_slider.pack()
-        self.brightness_slider.set(40)
 
         # Contrast slider
         self.contrast_slider = tk.Scale(
@@ -117,39 +118,24 @@ class ArmyPainter(tk.Tk):
             command=self.adjust_contrast,
         )
         self.contrast_slider.pack()
-        self.contrast_slider.set(100)
+        self.reset_workspace()
 
-        self.menubar = tk.Menu(self)
-        self.filemenu = tk.Menu(self.menubar, tearoff=0)
-        self.filemenu.add_command(label="Open diffuse", command=self.open_diffuse)
-        self.filemenu.add_command(label="Open channel file", command=self.open_channel)
-        self.filemenu.add_command(label="Save", command=self.save)
-        self.filemenu.add_command(label="Batch Edit", command=self.batch_edit)
-        self.filemenu.add_separator()
-        self.filemenu.add_command(label="Exit", command=self.quit)
-        self.menubar.add_cascade(label="File", menu=self.filemenu)
-        self.config(menu=self.menubar)
+        menubar = tk.Menu(self)
+        filemenu = tk.Menu(menubar, tearoff=0)
+        filemenu.add_command(label="Open diffuse", command=self.open_diffuse)
+        filemenu.add_command(label="Open channel file",
+                             command=self.open_channel)
+        filemenu.add_command(label="Save", command=self.save)
+        filemenu.add_command(label="Batch Edit", command=self.batch_edit)
+        filemenu.add_separator()
+        filemenu.add_command(label="Exit", command=self.quit)
+        menubar.add_cascade(label="File", menu=filemenu)
+        self.config(menu=menubar)
 
-        # Save BTN
-        self.save_button = tk.Button(
-            self.frame_text, text="Save Image", command=self.save
-        )
-        self.save_button.pack()
-
-        self.open_diffuse_button = tk.Button(
-            self.frame_text, text="Open Diffuse File", command=self.open_diffuse
-        )
-        self.open_diffuse_button.pack()
-
-        self.open_channel_button = tk.Button(
-            self.frame_text, text="Open Channel Packed File", command=self.open_channel
-        )
-        self.open_channel_button.pack()
-
-        self.open_dir_button = tk.Button(
-            self.frame_text, text="Batch Edit", command=self.batch_edit
-        )
-        self.open_dir_button.pack()
+        editmenu = tk.Menu(menubar, tearoff=0)
+        editmenu.add_command(label="Reset workspace",
+                             command=self.reset_workspace)
+        menubar.add_cascade(label="Edit", menu=editmenu)
 
     def adjust_brightness(self, value: float):
         self.refresh_workspace()
@@ -160,7 +146,7 @@ class ArmyPainter(tk.Tk):
     def save(self):
         filename = filedialog.asksaveasfilename(
             initialdir=os.curdir, filetypes=SAVE_FILETYPES
-            )
+        )
         self.img_workspace.save(filename)
 
     def process_img(self, chan: Image, color):
@@ -181,13 +167,14 @@ class ArmyPainter(tk.Tk):
             if color != (128, 128, 128):
                 chan.convert("L")
                 processed_img = self.process_img(chan, color)
-                self.img_workspace = ImageChops.add(self.img_workspace, processed_img)
+                self.img_workspace = ImageChops.add(
+                    self.img_workspace, processed_img)
         self.img_dif = ImageTk.PhotoImage(self.img_workspace)
         self.label_img_dif.config(image=self.img_dif)
 
     def apply_color(self, btn_idx: int):
         _, color = self.color_dialog.show()
-        if color != None:
+        if color is not None:
             self.color_boxes[btn_idx]["bg"] = color
         self.refresh_workspace()
 
@@ -199,7 +186,11 @@ class ArmyPainter(tk.Tk):
     def select_channel(self, event):
         new_img = Image.new("L", self.img_og_tem.size)
         for i in self.lb.curselection():
-            new_img = ImageChops.add(new_img, self.tem_channels[i])
+            # TODO: think about clean implementation
+            try:
+                new_img = ImageChops.add(new_img, self.tem_channels[i])
+            except IndexError:
+                return
         self.img = ImageTk.PhotoImage(new_img)
         self.label_img_tem.config(image=self.img)
 
@@ -223,11 +214,13 @@ class ArmyPainter(tk.Tk):
         self.select_channel(None)
 
     def open_diffuse(self):
-        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        f = filedialog.askopenfile(
+            initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         self.load_file(f.name)
 
     def open_channel(self):
-        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        f = filedialog.askopenfile(
+            initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         self.load_channel_packed_file(f.name)
 
     def batch_edit(self):
@@ -238,6 +231,16 @@ class ArmyPainter(tk.Tk):
                 self.load_file(f"{source}/{filename}")
                 tga_filename = filename[-3:] + ".tga"
                 self.img_workspace.save(f"{dest}/{tga_filename}")
+
+    def reset_workspace(self):
+        self.img_workspace = self.img_og_dif
+        for color_box in self.color_boxes:
+            color_box["bg"] = "gray"
+        self.brightness_slider.set(40)
+        self.contrast_slider.set(100)
+        self.lb.selection_set(first=0, last=3)
+        self.select_channel(None)
+        self.refresh_workspace()
 
 
 if __name__ == "__main__":
