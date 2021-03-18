@@ -2,25 +2,32 @@ import os
 import tkinter as tk
 from tkinter import colorchooser
 from PIL import (
-    Image, ImageChops, ImageOps, ImageTk, ImageColor, ImageEnhance, ImageDraw)
+    Image,
+    ImageChops,
+    ImageOps,
+    ImageTk,
+    ImageColor,
+    ImageEnhance,
+    ImageDraw,
+)
 from functools import partial
 from tkinter import filedialog
 
 path = os.path.dirname(__file__)
 OPEN_FILETYPES = (
-    ("all", "*.*"),
-    ("Direct Draw Surface", "dds"),
-    ("Portable Network Graphics", "png"),
-    ("JPEG Image", "jpg"),
-    ("Bitmap", "bmp"),
-    ("True Vision Targa", "tga"),
-    ("Blizzard Texture", "blp")
+    ("all", (".dds", ".png", ".jpg", ".bmp", ".tga", ".blp")),
+    ("Direct Draw Surface", ".dds"),
+    ("Portable Network Graphics", ".png"),
+    ("JPEG Image", ".jpg"),
+    ("Bitmap", ".bmp"),
+    ("True Vision Targa", ".tga"),
+    ("Blizzard Texture", ".blp"),
 )
 SAVE_FILETYPES = (
-    ("Portable Network Graphics", "png"),
-    ("JPEG Image", "jpg"),
-    ("Bitmap", "bmp"),
-    ("True Vision Targa", "tga"),
+    ("Portable Network Graphics", ".png"),
+    ("JPEG Image", ".jpg"),
+    ("Bitmap", ".bmp"),
+    ("True Vision Targa", ".tga"),
 )
 
 
@@ -122,20 +129,31 @@ class ArmyPainter(tk.Tk):
 
         menubar = tk.Menu(self)
         filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(label="Open diffuse", command=self.open_diffuse)
-        filemenu.add_command(label="Open channel file",
-                             command=self.open_channel)
-        filemenu.add_command(label="Save", command=self.save)
-        filemenu.add_command(label="Batch Edit", command=self.batch_edit)
+        filemenu.add_command(
+            label="Open diffuse", command=self.open_diffuse, accelerator="Ctrl+O"
+        )
+        filemenu.add_command(
+            label="Open channel file", command=self.open_channel, accelerator="Ctrl+C"
+        )
+        filemenu.add_command(label="Save", command=self.save, accelerator="Ctrl+S")
+        filemenu.add_command(
+            label="Batch Edit", command=self.batch_edit, accelerator="Ctrl+D"
+        )
         filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=self.quit)
+        filemenu.add_command(label="Exit", command=self.quit, accelerator="Ctrl+E")
         menubar.add_cascade(label="File", menu=filemenu)
         self.config(menu=menubar)
 
         editmenu = tk.Menu(menubar, tearoff=0)
-        editmenu.add_command(label="Reset workspace",
-                             command=self.reset_workspace)
+        editmenu.add_command(label="Reset workspace", command=self.reset_workspace, accelerator="Ctrl+R")
         menubar.add_cascade(label="Edit", menu=editmenu)
+
+        self.bind("<Control-o>", self.open_diffuse)
+        self.bind("<Control-c>", self.open_channel)
+        self.bind("<Control-s>", self.save)
+        self.bind("<Control-d>", self.batch_edit)
+        self.bind("<Control-e>", self.quit)
+        self.bind("<Control-r>", self.reset_workspace)
 
     def adjust_brightness(self, value: float):
         self.refresh_workspace()
@@ -143,7 +161,7 @@ class ArmyPainter(tk.Tk):
     def adjust_contrast(self, value: float):
         self.refresh_workspace()
 
-    def save(self):
+    def save(self, Event=None):
         filename = filedialog.asksaveasfilename(
             initialdir=os.curdir, filetypes=SAVE_FILETYPES
         )
@@ -155,9 +173,7 @@ class ArmyPainter(tk.Tk):
         enhancer_contrast = ImageEnhance.Contrast(img)
         img = enhancer_contrast.enhance(self.contrast_slider.get() / 100)
         enhancer_brightness = ImageEnhance.Brightness(img)
-        img = enhancer_brightness.enhance(
-            self.brightness_slider.get() / 100
-        )
+        img = enhancer_brightness.enhance(self.brightness_slider.get() / 100)
         return img
 
     def refresh_workspace(self):
@@ -167,8 +183,7 @@ class ArmyPainter(tk.Tk):
             if color != (128, 128, 128):
                 chan.convert("L")
                 processed_img = self.process_img(chan, color)
-                self.img_workspace = ImageChops.add(
-                    self.img_workspace, processed_img)
+                self.img_workspace = ImageChops.add(self.img_workspace, processed_img)
         self.img_dif = ImageTk.PhotoImage(self.img_workspace)
         self.label_img_dif.config(image=self.img_dif)
 
@@ -183,7 +198,7 @@ class ArmyPainter(tk.Tk):
             alpha_mask = ImageChops.invert(self.tem_channels[i])
             self.img_workspace.putalpha(alpha_mask)
 
-    def select_channel(self, event):
+    def select_channel(self, Event=None):
         new_img = Image.new("L", self.img_og_tem.size)
         for i in self.lb.curselection():
             # TODO: think about clean implementation
@@ -211,35 +226,36 @@ class ArmyPainter(tk.Tk):
         self.img_og_tem = Image.open(filename)
         self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
         self.tem_channels = self.img_og_tem.split()
-        self.select_channel(None)
+        self.select_channel()
 
-    def open_diffuse(self):
-        f = filedialog.askopenfile(
-            initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+    def open_diffuse(self, Event=None):
+        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         self.load_file(f.name)
 
-    def open_channel(self):
-        f = filedialog.askopenfile(
-            initialdir=os.curdir, filetypes=OPEN_FILETYPES)
-        self.load_channel_packed_file(f.name)
+    def open_channel(self, Event=None):
+        with filedialog.askopenfile(
+            initialdir=os.curdir, filetypes=OPEN_FILETYPES
+        ) as f:
+            self.load_channel_packed_file(f.name)
 
-    def batch_edit(self):
+    def batch_edit(self, Event=None):
         source = filedialog.askdirectory(initialdir=os.curdir)
         dest = filedialog.askdirectory(initialdir=os.curdir)
         for filename in os.listdir(source):
             if filename.endswith("_dif.dds"):
+                # print(filename)
                 self.load_file(f"{source}/{filename}")
-                tga_filename = filename[-3:] + ".tga"
+                tga_filename = filename[:-3] + ".tga"
                 self.img_workspace.save(f"{dest}/{tga_filename}")
 
-    def reset_workspace(self):
+    def reset_workspace(self, Event=None):
         self.img_workspace = self.img_og_dif
         for color_box in self.color_boxes:
             color_box["bg"] = "gray"
         self.brightness_slider.set(40)
         self.contrast_slider.set(100)
         self.lb.selection_set(first=0, last=3)
-        self.select_channel(None)
+        self.select_channel()
         self.refresh_workspace()
 
 
