@@ -54,8 +54,8 @@ class ArmyPainter(tk.Tk):
         self.frame_img.pack(side=tk.BOTTOM)
 
         # Frame TEXT
-        self.frame_text = tk.Frame(self, width=1000, height=300)
-        self.frame_text.place(anchor=tk.NW)
+        self.frame_tools = tk.Frame(self, width=1000, height=300)
+        self.frame_tools.place(anchor=tk.NW)
 
         self.img_og_dif = create_placeholder_img()
         self.img_dif = ImageTk.PhotoImage(self.img_og_dif)
@@ -70,26 +70,37 @@ class ArmyPainter(tk.Tk):
         self.label_img_tem = tk.Label(self.frame_img, image=self.img_tem)
         self.label_img_tem.pack(side=tk.RIGHT)
 
-        # LIST BOX
-        # self.lb = tk.Listbox(self.frame_text, selectmode=tk.MULTIPLE)
-        # self.lb.insert(0, "0 Red")
-        # self.lb.insert(1, "1 Green")
-        # self.lb.insert(2, "2 Blue")
-        # self.lb.insert(3, "3 Alpha")
-        # self.lb.pack(side=tk.RIGHT)
-        # self.bind("<<ListboxSelect>>", self.select_channel)
+        # Channel List Frame
+        self.frame_channel_list = tk.LabelFrame(self.frame_tools, text="Channel List", relief=tk.GROOVE)
+        self.frame_channel_list.pack(side=tk.RIGHT, fill=tk.Y)
+
+        # Channel List Box
+        self.lb = tk.Listbox(self.frame_channel_list, selectmode=tk.MULTIPLE, height=4, width=9)
+        self.lb.insert(0, "0 Red")
+        self.lb.insert(1, "1 Green")
+        self.lb.insert(2, "2 Blue")
+        self.lb.insert(3, "3 Alpha")
+        self.bind("<<ListboxSelect>>", self.select_channel)
+        self.lb.pack(side=tk.TOP, fill=tk.X)
+
+        # Add alpha BTN
+        self.add_alpha = tk.Button(
+            self.frame_channel_list, text="Apply alpha", command=self.apply_alpha
+        )
+        self.add_alpha.pack(side=tk.LEFT, fill=tk.X)
 
         # Color Dialog that open upon btn click
         self.color_dialog = colorchooser.Chooser(self)
 
         # Color boxes
         self.frame_boxes = tk.Frame(
-            self.frame_text,
+            self.frame_tools,
             relief=tk.SOLID,
             width=COLOR_BOX_SIZE * 4 + 5,
             height=COLOR_BTN_HEIGHT + COLOR_BOX_SIZE,
         )
-        self.frame_boxes.place(anchor=tk.NW)
+        # self.frame_boxes.place(anchor=tk.NW)
+        self.frame_boxes.pack(side=tk.TOP)
 
         self.color_boxes = []
         self.color_buttons = []
@@ -116,15 +127,9 @@ class ArmyPainter(tk.Tk):
             )
             self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=0)
 
-        # # Add alpha BTN
-        # self.add_alpha = tk.Button(
-        #     self.frame_text, text="Add alpha", command=self.apply_alpha
-        # )
-        # self.add_alpha.pack()
-
         # # Brightness slider
         # self.brightness_slider = tk.Scale(
-        #     self.frame_text,
+        #     self.frame_tools,
         #     from_=0.0,
         #     to=150.0,
         #     orient=tk.HORIZONTAL,
@@ -134,7 +139,7 @@ class ArmyPainter(tk.Tk):
 
         # # Contrast slider
         # self.contrast_slider = tk.Scale(
-        #     self.frame_text,
+        #     self.frame_tools,
         #     from_=0.0,
         #     to=200.0,
         #     orient=tk.HORIZONTAL,
