@@ -13,8 +13,13 @@ from PIL import (
 )
 from functools import partial
 from tkinter import filedialog
+from enum import Enum
+
+VIEW_IMG_TOOL = 0
+VIEW_BATCH_EDIT_TOOL = 1
 
 path = os.path.dirname(__file__)
+
 OPEN_FILETYPES = (
     ("all", (".dds", ".png", ".jpg", ".bmp", ".tga", ".blp")),
     ("Direct Draw Surface", ".dds"),
@@ -55,13 +60,18 @@ class ArmyPainter(tk.Tk):
         self.title("Army Painter")
         self.tem_channels = []
 
-        # Frame Tool
-        self.frame_tools = tk.Frame(self, width=DEFAULT_IMG_SIZE * 2, height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT, bd=2, relief=tk.RIDGE)
-        self.frame_tools.pack(side=tk.TOP, fill=tk.BOTH)
+        # Frame IMG Tool
+        self.frame_img_tools = tk.Frame(self, width=DEFAULT_IMG_SIZE * 2, height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT, bd=2, relief=tk.RIDGE)
+        self.frame_img_tools.pack(side=tk.TOP, fill=tk.BOTH)
+
+        # Frame Batch Tool
+        self.frame_batch_tools = tk.Frame(self, width=DEFAULT_IMG_SIZE * 2, height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT, bd=2, relief=tk.RIDGE)
+        self.frame_batch_tools.pack_forget()
+        self.define_frame_batch_tool()
 
         # Frame IMG
         self.frame_img = tk.Frame(self)
-        self.frame_img.pack(side=tk.TOP, fill=tk.X, expand=True)
+        self.frame_img.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
 
         # TODO: refactor img variable
         self.img_og_dif = create_placeholder_img()
@@ -81,7 +91,7 @@ class ArmyPainter(tk.Tk):
 
         # Color boxes
         self.frame_boxes = tk.Frame(
-            self.frame_tools,
+            self.frame_img_tools,
             relief=tk.SOLID,
             width=COLOR_BOX_SIZE * 4 + 4,
             height=COLOR_BTN_HEIGHT + COLOR_BOX_SIZE,
@@ -121,7 +131,7 @@ class ArmyPainter(tk.Tk):
         self.color_dialog = colorchooser.Chooser(self)
 
         # Channel List Frame
-        self.frame_channel_list = tk.LabelFrame(self.frame_tools, text="RGBA Channel", relief=tk.RIDGE, bd=2)
+        self.frame_channel_list = tk.LabelFrame(self.frame_img_tools, text="RGBA Channel", relief=tk.RIDGE, bd=2)
         self.frame_channel_list.pack(side=tk.LEFT, fill=tk.Y)
 
         # Channel List Box
@@ -140,7 +150,7 @@ class ArmyPainter(tk.Tk):
         )
         self.add_alpha.pack(side=tk.TOP, fill=tk.X)
 
-        self.frame_sliders = tk.Frame(self.frame_tools, relief=tk.RIDGE, bd=2)
+        self.frame_sliders = tk.Frame(self.frame_img_tools, relief=tk.RIDGE, bd=2)
         self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
 
         # Brightness slider
@@ -177,9 +187,6 @@ class ArmyPainter(tk.Tk):
             label="Open channel file", command=self.open_channel, accelerator="Ctrl+C"
         )
         filemenu.add_command(label="Save", command=self.save, accelerator="Ctrl+S")
-        filemenu.add_command(
-            label="Batch Edit", command=self.batch_edit, accelerator="Ctrl+D"
-        )
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=self.quit)
         menubar.add_cascade(label="File", menu=filemenu)
@@ -191,12 +198,44 @@ class ArmyPainter(tk.Tk):
         )
         menubar.add_cascade(label="Edit", menu=editmenu)
 
+        self.tool_view = tk.IntVar()
+        toolmenu = tk.Menu(menubar, tearoff=0)
+        toolmenu.add_radiobutton(
+            label="Image Tools", variable=self.tool_view, value=VIEW_IMG_TOOL, command=self.toggle_tool_view, accelerator="Ctrl+A"
+        )
+        toolmenu.add_radiobutton(
+            label="Batch Edit Tools", variable=self.tool_view, value=VIEW_BATCH_EDIT_TOOL, command=self.toggle_tool_view, accelerator="Ctrl+W"
+        )
+        menubar.add_cascade(label="Tools", menu=toolmenu)
+
         self.bind("<Control-o>", self.open_diffuse)
         self.bind("<Control-c>", self.open_channel)
         self.bind("<Control-s>", self.save)
         self.bind("<Control-d>", self.batch_edit)
         self.bind("<Control-r>", self.reset_workspace)
         self.draw_rgb_value()
+
+    def define_frame_batch_tool(self):
+        self.source_format_list = []
+        self.frame_source_format = tk.LabelFrame(self.frame_batch_tools, text="Source formats")
+        for idx, filetype in enumerate(OPEN_FILETYPES[1:]):
+            self.source_format_list.append(
+                tk.Checkbutton(self.frame_source_format, text=filetype[1].upper(), onvalue=True, offvalue=False)
+            )
+            self.source_format_list[idx].pack(side=tk.LEFT)
+        # Add alpha BTN
+        self.add_alpha = tk.Button(
+            self.frame_source_format, text="Apply alpha", command=self.apply_alpha
+        )
+        self.add_alpha.pack(side=tk.TOP, fill=tk.X)
+
+    def toggle_tool_view(self, Event=None):
+        if self.tool_view.get() is VIEW_IMG_TOOL:
+            self.frame_batch_tools.pack_forget()
+            self.frame_img_tools.pack(side=tk.TOP, fill=tk.BOTH)
+        elif self.tool_view.get() is VIEW_BATCH_EDIT_TOOL:
+            self.frame_img_tools.pack_forget()
+            self.frame_batch_tools.pack(side=tk.TOP, fill=tk.BOTH)
 
     def adjust_brightness(self, value: float):
         self.refresh_workspace()
@@ -297,7 +336,7 @@ class ArmyPainter(tk.Tk):
         for filename in os.listdir(source):
             if filename.endswith("_dif.dds"):
                 self.load_file(f"{source}/{filename}")
-                tga_filename = filename[:-3] + ".tga"
+                tga_filename = filename[:-4] + ".tga"
                 self.img_workspace.save(f"{dest}/{tga_filename}")
 
     def reset_workspace(self, Event=None):
