@@ -70,25 +70,6 @@ class ArmyPainter(tk.Tk):
         self.label_img_tem = tk.Label(self.frame_img, image=self.img_tem)
         self.label_img_tem.pack(side=tk.RIGHT)
 
-        # Channel List Frame
-        self.frame_channel_list = tk.LabelFrame(self.frame_tools, text="Channel List", relief=tk.GROOVE)
-        self.frame_channel_list.pack(side=tk.RIGHT, fill=tk.Y)
-
-        # Channel List Box
-        self.lb = tk.Listbox(self.frame_channel_list, selectmode=tk.MULTIPLE, height=4, width=9)
-        self.lb.insert(0, "0 Red")
-        self.lb.insert(1, "1 Green")
-        self.lb.insert(2, "2 Blue")
-        self.lb.insert(3, "3 Alpha")
-        self.bind("<<ListboxSelect>>", self.select_channel)
-        self.lb.pack(side=tk.TOP, fill=tk.X)
-
-        # Add alpha BTN
-        self.add_alpha = tk.Button(
-            self.frame_channel_list, text="Apply alpha", command=self.apply_alpha
-        )
-        self.add_alpha.pack(side=tk.LEFT, fill=tk.X)
-
         # Color Dialog that open upon btn click
         self.color_dialog = colorchooser.Chooser(self)
 
@@ -100,7 +81,7 @@ class ArmyPainter(tk.Tk):
             height=COLOR_BTN_HEIGHT + COLOR_BOX_SIZE,
         )
         # self.frame_boxes.place(anchor=tk.NW)
-        self.frame_boxes.pack(side=tk.TOP)
+        self.frame_boxes.pack(side=tk.LEFT)
 
         self.color_boxes = []
         self.color_buttons = []
@@ -127,26 +108,52 @@ class ArmyPainter(tk.Tk):
             )
             self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=0)
 
-        # # Brightness slider
-        # self.brightness_slider = tk.Scale(
-        #     self.frame_tools,
-        #     from_=0.0,
-        #     to=150.0,
-        #     orient=tk.HORIZONTAL,
-        #     command=self.adjust_brightness,
-        # )
-        # self.brightness_slider.pack()
+        # Channel List Frame
+        self.frame_channel_list = tk.LabelFrame(self.frame_tools, text="Channel List", relief=tk.GROOVE)
+        self.frame_channel_list.pack(side=tk.LEFT, fill=tk.Y)
 
-        # # Contrast slider
-        # self.contrast_slider = tk.Scale(
-        #     self.frame_tools,
-        #     from_=0.0,
-        #     to=200.0,
-        #     orient=tk.HORIZONTAL,
-        #     command=self.adjust_contrast,
-        # )
-        # self.contrast_slider.pack()
-        # self.reset_workspace()
+        # Channel List Box
+        self.lb = tk.Listbox(self.frame_channel_list, selectmode=tk.MULTIPLE, height=4, width=9)
+        self.lb.insert(0, "0 Red")
+        self.lb.insert(1, "1 Green")
+        self.lb.insert(2, "2 Blue")
+        self.lb.insert(3, "3 Alpha")
+        self.bind("<<ListboxSelect>>", self.select_channel)
+        self.lb.pack(side=tk.TOP, fill=tk.X)
+
+        # Add alpha BTN
+        self.add_alpha = tk.Button(
+            self.frame_channel_list, text="Apply alpha", command=self.apply_alpha
+        )
+        self.add_alpha.pack(side=tk.LEFT, fill=tk.X)
+
+        self.frame_sliders = tk.Frame(self.frame_tools, relief=tk.SUNKEN)
+        self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
+
+        # Brightness slider
+        self.brightness_slider = tk.Scale(
+            self.frame_sliders,
+            label="Brightness",
+            length=150,
+            from_=0.0,
+            to=150.0,
+            orient=tk.HORIZONTAL,
+            command=self.adjust_brightness,
+        )
+        self.brightness_slider.pack(side=tk.TOP, fill=tk.X)
+
+        # Contrast slider
+        self.contrast_slider = tk.Scale(
+            self.frame_sliders,
+            label="Contrast",
+            length=200,
+            from_=0.0,
+            to=200.0,
+            orient=tk.HORIZONTAL,
+            command=self.adjust_contrast,
+        )
+        self.contrast_slider.pack(side=tk.TOP, fill=tk.X)
+        self.reset_workspace()
 
         menubar = tk.Menu(self)
         filemenu = tk.Menu(menubar, tearoff=0)
