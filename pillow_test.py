@@ -1,6 +1,6 @@
 import os
 import tkinter as tk
-from tkinter import colorchooser
+from tkinter import colorchooser, font
 from PIL import (
     Image,
     ImageChops,
@@ -32,12 +32,15 @@ SAVE_FILETYPES = (
 )
 COLOR_BOX_SIZE = 90
 COLOR_BTN_HEIGHT = 26
+FRAME_TOOL_HEIGHT = COLOR_BOX_SIZE + COLOR_BTN_HEIGHT + 12
+
+DEFAULT_IMG_SIZE = 256
 
 
 def create_placeholder_img():
-    img = Image.new("RGBA", (256, 256))
+    img = Image.new(mode="RGBA", size=(DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE), color="gray")
     d1 = ImageDraw.Draw(img)
-    d1.text(xy=(128, 128), fill="black", text="Diffuse PlaceHolder")
+    d1.text(xy=(180, 256), fill="black", text="Image PlaceHolder")
     return img
 
 
@@ -45,43 +48,46 @@ class ArmyPainter(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        self.geometry("1000x1000")
+        min_size = (DEFAULT_IMG_SIZE * 2 + 12, DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT)
+        dimension = f"{min_size[0]}x{min_size[1]}"
+        self.geometry(dimension)
+        self.minsize(min_size[0], min_size[1])
         self.title("Army Painter")
         self.tem_channels = []
 
+        # Frame Tool
+        self.frame_tools = tk.Frame(self, width=DEFAULT_IMG_SIZE * 2, height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT, bd=2, relief=tk.RIDGE)
+        self.frame_tools.pack(side=tk.TOP, fill=tk.BOTH)
+
         # Frame IMG
         self.frame_img = tk.Frame(self)
-        self.frame_img.pack(side=tk.BOTTOM)
+        self.frame_img.pack(side=tk.TOP, fill=tk.X, expand=True)
 
-        # Frame TEXT
-        self.frame_tools = tk.Frame(self, width=1000, height=300)
-        self.frame_tools.place(anchor=tk.NW)
-
+        # TODO: refactor img variable
         self.img_og_dif = create_placeholder_img()
         self.img_dif = ImageTk.PhotoImage(self.img_og_dif)
 
         # Label SETTING DIF
-        self.label_img_dif = tk.Label(self.frame_img, image=self.img_dif)
-        self.label_img_dif.pack(side=tk.LEFT)
+        self.label_img_dif = tk.Label(self.frame_img, image=self.img_dif, relief=tk.RAISED)
+        self.label_img_dif.pack(side=tk.LEFT, fill=tk.Y)
 
         self.img_og_tem = create_placeholder_img()
         self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
-        # LABEL SETTING TEM
-        self.label_img_tem = tk.Label(self.frame_img, image=self.img_tem)
-        self.label_img_tem.pack(side=tk.RIGHT)
 
-        # Color Dialog that open upon btn click
-        self.color_dialog = colorchooser.Chooser(self)
+        # LABEL SETTING TEM
+        self.label_img_tem = tk.Label(self.frame_img, image=self.img_tem, relief=tk.RAISED)
+        self.label_img_tem.pack(side=tk.LEFT, fill=tk.Y)
+
 
         # Color boxes
         self.frame_boxes = tk.Frame(
             self.frame_tools,
             relief=tk.SOLID,
-            width=COLOR_BOX_SIZE * 4 + 5,
+            width=COLOR_BOX_SIZE * 4 + 4,
             height=COLOR_BTN_HEIGHT + COLOR_BOX_SIZE,
         )
         # self.frame_boxes.place(anchor=tk.NW)
-        self.frame_boxes.pack(side=tk.LEFT)
+        self.frame_boxes.pack(side=tk.LEFT, fill=tk.Y)
 
         self.color_boxes = []
         self.color_buttons = []
@@ -90,6 +96,8 @@ class ArmyPainter(tk.Tk):
                 tk.Canvas(
                     self.frame_boxes,
                     bg="gray",
+                    relief=tk.RAISED,
+                    bd=2,
                     height=COLOR_BOX_SIZE,
                     width=COLOR_BOX_SIZE,
                 )
@@ -102,14 +110,18 @@ class ArmyPainter(tk.Tk):
                     self.frame_boxes,
                     text=f"Choose Color {i}",
                     wraplength=COLOR_BOX_SIZE,
-                    relief=tk.RIDGE,
+                    relief=tk.RAISED,
+                    bd=2,
                     command=partial(self.apply_color, i),
                 )
             )
-            self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=0)
+            self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i + 1, y=0)
+
+        # Color Dialog that open upon btn click
+        self.color_dialog = colorchooser.Chooser(self)
 
         # Channel List Frame
-        self.frame_channel_list = tk.LabelFrame(self.frame_tools, text="Channel List", relief=tk.GROOVE)
+        self.frame_channel_list = tk.LabelFrame(self.frame_tools, text="RGBA Channel", relief=tk.RIDGE, bd=2)
         self.frame_channel_list.pack(side=tk.LEFT, fill=tk.Y)
 
         # Channel List Box
@@ -119,15 +131,16 @@ class ArmyPainter(tk.Tk):
         self.lb.insert(2, "2 Blue")
         self.lb.insert(3, "3 Alpha")
         self.bind("<<ListboxSelect>>", self.select_channel)
-        self.lb.pack(side=tk.TOP, fill=tk.X)
+        self.lb.pack(side=tk.TOP, fill=tk.Y)
+
 
         # Add alpha BTN
         self.add_alpha = tk.Button(
             self.frame_channel_list, text="Apply alpha", command=self.apply_alpha
         )
-        self.add_alpha.pack(side=tk.LEFT, fill=tk.X)
+        self.add_alpha.pack(side=tk.TOP, fill=tk.X)
 
-        self.frame_sliders = tk.Frame(self.frame_tools, relief=tk.SUNKEN)
+        self.frame_sliders = tk.Frame(self.frame_tools, relief=tk.RIDGE, bd=2)
         self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
 
         # Brightness slider
@@ -217,6 +230,14 @@ class ArmyPainter(tk.Tk):
         self.img_dif = ImageTk.PhotoImage(self.img_workspace)
         self.label_img_dif.config(image=self.img_dif)
 
+    def refresh_window_size(self, Event=None):
+        img_dif_size = self.img_workspace.size
+        img_tem_size = self.img_og_tem.size
+        new_width = img_dif_size[0] + img_tem_size[0]
+        # Assuming both image got same size
+        new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
+        self.geometry(f"{new_width}x{new_height}")
+
     def apply_color(self, btn_idx: int):
         _, color = self.color_dialog.show()
         if color is not None:
@@ -251,6 +272,7 @@ class ArmyPainter(tk.Tk):
         tem_filename = filename.replace("_dif.", "_tem.")
         self.load_channel_packed_file(tem_filename)
         self.refresh_workspace()
+        self.refresh_window_size()
 
     def load_channel_packed_file(self, filename: str):
         # tem image
