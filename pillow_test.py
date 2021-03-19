@@ -30,6 +30,8 @@ SAVE_FILETYPES = (
     ("Bitmap", ".bmp"),
     ("True Vision Targa", ".tga"),
 )
+COLOR_BOX_SIZE = 90
+COLOR_BTN_HEIGHT = 26
 
 
 def create_placeholder_img():
@@ -52,7 +54,7 @@ class ArmyPainter(tk.Tk):
         self.frame_img.pack(side=tk.BOTTOM)
 
         # Frame TEXT
-        self.frame_text = tk.Frame(self,width=1000, height=300)
+        self.frame_text = tk.Frame(self, width=1000, height=300)
         self.frame_text.place(anchor=tk.NW)
 
         self.img_og_dif = create_placeholder_img()
@@ -81,27 +83,38 @@ class ArmyPainter(tk.Tk):
         self.color_dialog = colorchooser.Chooser(self)
 
         # Color boxes
-        box_size = 90
-        self.frame_boxes = tk.Frame(self.frame_text, width=box_size * 4 + 20, height=box_size * 4)
+        self.frame_boxes = tk.Frame(
+            self.frame_text,
+            relief=tk.SOLID,
+            width=COLOR_BOX_SIZE * 4 + 5,
+            height=COLOR_BTN_HEIGHT + COLOR_BOX_SIZE,
+        )
         self.frame_boxes.place(anchor=tk.NW)
+
         self.color_boxes = []
         self.color_buttons = []
         for i in range(0, 4):
             self.color_boxes.append(
-                tk.Canvas(self.frame_boxes, bg="gray", height=box_size, width=box_size)
+                tk.Canvas(
+                    self.frame_boxes,
+                    bg="gray",
+                    height=COLOR_BOX_SIZE,
+                    width=COLOR_BOX_SIZE,
+                )
             )
-            self.color_boxes[i].place(anchor=tk.NW, x=box_size * int(i % 2), y=26 + box_size * int(i / 2))
-            #self.color_boxes[i].pack(side=tk.BOTTOM)
+            self.color_boxes[i].place(
+                anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=COLOR_BTN_HEIGHT
+            )
             self.color_buttons.append(
                 tk.Button(
                     self.frame_boxes,
                     text=f"Choose Color {i}",
-                    wraplength=box_size,
+                    wraplength=COLOR_BOX_SIZE,
+                    relief=tk.RIDGE,
                     command=partial(self.apply_color, i),
                 )
             )
-            # self.color_buttons[i].pack(side=tk.TOP)
-            self.color_buttons[i].place(anchor=tk.NW, relx=0.5 * int(i % 2), rely=0.5 * int(i / 2))
+            self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=0)
 
         # # Add alpha BTN
         # self.add_alpha = tk.Button(
@@ -148,7 +161,9 @@ class ArmyPainter(tk.Tk):
         self.config(menu=menubar)
 
         editmenu = tk.Menu(menubar, tearoff=0)
-        editmenu.add_command(label="Reset workspace", command=self.reset_workspace, accelerator="Ctrl+R")
+        editmenu.add_command(
+            label="Reset workspace", command=self.reset_workspace, accelerator="Ctrl+R"
+        )
         menubar.add_cascade(label="Edit", menu=editmenu)
 
         self.bind("<Control-o>", self.open_diffuse)
@@ -156,6 +171,7 @@ class ArmyPainter(tk.Tk):
         self.bind("<Control-s>", self.save)
         self.bind("<Control-d>", self.batch_edit)
         self.bind("<Control-r>", self.reset_workspace)
+        self.draw_rgb_value()
 
     def adjust_brightness(self, value: float):
         self.refresh_workspace()
@@ -193,6 +209,7 @@ class ArmyPainter(tk.Tk):
         _, color = self.color_dialog.show()
         if color is not None:
             self.color_boxes[btn_idx]["bg"] = color
+            self.draw_rgb_value()
         self.refresh_workspace()
 
     def apply_alpha(self):
@@ -245,7 +262,6 @@ class ArmyPainter(tk.Tk):
         dest = filedialog.askdirectory(initialdir=os.curdir)
         for filename in os.listdir(source):
             if filename.endswith("_dif.dds"):
-                # print(filename)
                 self.load_file(f"{source}/{filename}")
                 tga_filename = filename[:-3] + ".tga"
                 self.img_workspace.save(f"{dest}/{tga_filename}")
@@ -259,6 +275,17 @@ class ArmyPainter(tk.Tk):
         self.lb.selection_set(first=0, last=3)
         self.select_channel()
         self.refresh_workspace()
+
+    def draw_rgb_value(self):
+        for color_box in self.color_boxes:
+            color = str(color_box["bg"])
+            color_box.delete("all")
+            color_box.create_text(
+                COLOR_BOX_SIZE / 2,
+                COLOR_BOX_SIZE / 2,
+                text=color,
+                font=("Arial", 10, "bold"),
+            )
 
 
 if __name__ == "__main__":
