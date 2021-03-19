@@ -297,7 +297,7 @@ class ArmyPainter(tk.Tk):
         for filename in os.listdir(source):
             if filename.endswith("_dif.dds"):
                 self.load_file(f"{source}/{filename}")
-                tga_filename = filename[:-3] + ".tga"
+                tga_filename = filename[:-4] + ".tga"
                 self.img_workspace.save(f"{dest}/{tga_filename}")
 
     def reset_workspace(self, Event=None):
