@@ -5,6 +5,7 @@ from PIL import (
     Image,
     ImageChops,
     ImageOps,
+    ImageFont,
     ImageTk,
     ImageColor,
     ImageEnhance,
@@ -34,7 +35,7 @@ SAVE_FILETYPES = (
 def create_placeholder_img():
     img = Image.new("RGBA", (256, 256))
     d1 = ImageDraw.Draw(img)
-    d1.text((128, 128), "Diffuse PlaceHolder")
+    d1.text(xy=(128, 128), fill="black", text="Diffuse PlaceHolder")
     return img
 
 
@@ -48,84 +49,86 @@ class ArmyPainter(tk.Tk):
 
         # Frame IMG
         self.frame_img = tk.Frame(self)
-        self.frame_img.pack(side=tk.RIGHT)
+        self.frame_img.pack(side=tk.BOTTOM)
 
         # Frame TEXT
-        self.frame_text = tk.Frame(self)
-        self.frame_text.pack(side=tk.LEFT)
+        self.frame_text = tk.Frame(self,width=1000, height=300)
+        self.frame_text.place(anchor=tk.NW)
 
         self.img_og_dif = create_placeholder_img()
         self.img_dif = ImageTk.PhotoImage(self.img_og_dif)
 
         # Label SETTING DIF
-        self.label_text_dif = tk.Label(self.frame_text, text="Img diffuse")
-        self.label_text_dif.pack(side=tk.TOP)
         self.label_img_dif = tk.Label(self.frame_img, image=self.img_dif)
-        self.label_img_dif.pack(side=tk.TOP)
+        self.label_img_dif.pack(side=tk.LEFT)
 
         self.img_og_tem = create_placeholder_img()
         self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
         # LABEL SETTING TEM
-        self.label_text_tem = tk.Label(self.frame_text, text="Img tem")
-        self.label_text_tem.pack(side=tk.BOTTOM)
         self.label_img_tem = tk.Label(self.frame_img, image=self.img_tem)
-        self.label_img_tem.pack(side=tk.BOTTOM)
+        self.label_img_tem.pack(side=tk.RIGHT)
 
         # LIST BOX
-        self.lb = tk.Listbox(self.frame_text, selectmode=tk.MULTIPLE)
-        self.lb.insert(0, "0 Red")
-        self.lb.insert(1, "1 Green")
-        self.lb.insert(2, "2 Blue")
-        self.lb.insert(3, "3 Alpha")
-        self.lb.pack(side=tk.BOTTOM)
-        self.bind("<<ListboxSelect>>", self.select_channel)
+        # self.lb = tk.Listbox(self.frame_text, selectmode=tk.MULTIPLE)
+        # self.lb.insert(0, "0 Red")
+        # self.lb.insert(1, "1 Green")
+        # self.lb.insert(2, "2 Blue")
+        # self.lb.insert(3, "3 Alpha")
+        # self.lb.pack(side=tk.RIGHT)
+        # self.bind("<<ListboxSelect>>", self.select_channel)
 
         # Color Dialog that open upon btn click
         self.color_dialog = colorchooser.Chooser(self)
 
         # Color boxes
+        box_size = 90
+        self.frame_boxes = tk.Frame(self.frame_text, width=box_size * 4 + 20, height=box_size * 4)
+        self.frame_boxes.place(anchor=tk.NW)
         self.color_boxes = []
         self.color_buttons = []
         for i in range(0, 4):
             self.color_boxes.append(
-                tk.Canvas(self.frame_text, bg="gray", height=64, width=64)
+                tk.Canvas(self.frame_boxes, bg="gray", height=box_size, width=box_size)
             )
-            self.color_boxes[i].pack(side=tk.BOTTOM)
+            self.color_boxes[i].place(anchor=tk.NW, x=box_size * int(i % 2), y=26 + box_size * int(i / 2))
+            #self.color_boxes[i].pack(side=tk.BOTTOM)
             self.color_buttons.append(
                 tk.Button(
-                    self.frame_text,
+                    self.frame_boxes,
                     text=f"Choose Color {i}",
+                    wraplength=box_size,
                     command=partial(self.apply_color, i),
                 )
             )
-            self.color_buttons[i].pack(side=tk.BOTTOM)
+            # self.color_buttons[i].pack(side=tk.TOP)
+            self.color_buttons[i].place(anchor=tk.NW, relx=0.5 * int(i % 2), rely=0.5 * int(i / 2))
 
-        # Add alpha BTN
-        self.add_alpha = tk.Button(
-            self.frame_text, text="Add alpha", command=self.apply_alpha
-        )
-        self.add_alpha.pack()
+        # # Add alpha BTN
+        # self.add_alpha = tk.Button(
+        #     self.frame_text, text="Add alpha", command=self.apply_alpha
+        # )
+        # self.add_alpha.pack()
 
-        # Brightness slider
-        self.brightness_slider = tk.Scale(
-            self.frame_text,
-            from_=0.0,
-            to=150.0,
-            orient=tk.HORIZONTAL,
-            command=self.adjust_brightness,
-        )
-        self.brightness_slider.pack()
+        # # Brightness slider
+        # self.brightness_slider = tk.Scale(
+        #     self.frame_text,
+        #     from_=0.0,
+        #     to=150.0,
+        #     orient=tk.HORIZONTAL,
+        #     command=self.adjust_brightness,
+        # )
+        # self.brightness_slider.pack()
 
-        # Contrast slider
-        self.contrast_slider = tk.Scale(
-            self.frame_text,
-            from_=0.0,
-            to=200.0,
-            orient=tk.HORIZONTAL,
-            command=self.adjust_contrast,
-        )
-        self.contrast_slider.pack()
-        self.reset_workspace()
+        # # Contrast slider
+        # self.contrast_slider = tk.Scale(
+        #     self.frame_text,
+        #     from_=0.0,
+        #     to=200.0,
+        #     orient=tk.HORIZONTAL,
+        #     command=self.adjust_contrast,
+        # )
+        # self.contrast_slider.pack()
+        # self.reset_workspace()
 
         menubar = tk.Menu(self)
         filemenu = tk.Menu(menubar, tearoff=0)
@@ -140,7 +143,7 @@ class ArmyPainter(tk.Tk):
             label="Batch Edit", command=self.batch_edit, accelerator="Ctrl+D"
         )
         filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=self.quit, accelerator="Ctrl+E")
+        filemenu.add_command(label="Exit", command=self.quit)
         menubar.add_cascade(label="File", menu=filemenu)
         self.config(menu=menubar)
 
@@ -152,7 +155,6 @@ class ArmyPainter(tk.Tk):
         self.bind("<Control-c>", self.open_channel)
         self.bind("<Control-s>", self.save)
         self.bind("<Control-d>", self.batch_edit)
-        self.bind("<Control-e>", self.quit)
         self.bind("<Control-r>", self.reset_workspace)
 
     def adjust_brightness(self, value: float):
