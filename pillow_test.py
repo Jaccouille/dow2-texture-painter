@@ -292,6 +292,9 @@ class ArmyPainter(tk.Tk):
 
         self.frame_batch_source_path = entry_template(self.frame_batch_tools, "Source folder:")
         self.frame_batch_source_path = entry_template(self.frame_batch_tools, "Destination folder:")
+        tk.Button(
+            self.frame_batch_tools, text="Process", command=self.batch_edit
+            ).pack(side=tk.LEFT)
 
 
     def toggle_tool_view(self, Event=None):
