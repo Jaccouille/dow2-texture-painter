@@ -43,7 +43,9 @@ DEFAULT_IMG_SIZE = 256
 
 
 def create_placeholder_img():
-    img = Image.new(mode="RGBA", size=(DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE), color="gray")
+    img = Image.new(
+        mode="RGBA", size=(DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE), color="gray"
+    )
     d1 = ImageDraw.Draw(img)
     d1.text(xy=(180, 256), fill="black", text="Image PlaceHolder")
     return img
@@ -61,11 +63,23 @@ class ArmyPainter(tk.Tk):
         self.tem_channels = []
 
         # Frame IMG Tool
-        self.frame_img_tools = tk.Frame(self, width=DEFAULT_IMG_SIZE * 2, height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT, bd=2, relief=tk.RIDGE)
+        self.frame_img_tools = tk.Frame(
+            self,
+            width=DEFAULT_IMG_SIZE * 2,
+            height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT,
+            bd=2,
+            relief=tk.RIDGE,
+        )
         self.frame_img_tools.pack(side=tk.TOP, fill=tk.BOTH)
 
         # Frame Batch Tool
-        self.frame_batch_tools = tk.Frame(self, width=DEFAULT_IMG_SIZE * 2, height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT, bd=2, relief=tk.RIDGE)
+        self.frame_batch_tools = tk.Frame(
+            self,
+            width=DEFAULT_IMG_SIZE * 2,
+            height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT,
+            bd=2,
+            relief=tk.RIDGE,
+        )
         self.frame_batch_tools.pack_forget()
         self.define_frame_batch_tool()
 
@@ -78,16 +92,19 @@ class ArmyPainter(tk.Tk):
         self.img_dif = ImageTk.PhotoImage(self.img_og_dif)
 
         # Label SETTING DIF
-        self.label_img_dif = tk.Label(self.frame_img, image=self.img_dif, relief=tk.RAISED)
+        self.label_img_dif = tk.Label(
+            self.frame_img, image=self.img_dif, relief=tk.RAISED
+        )
         self.label_img_dif.pack(side=tk.LEFT, fill=tk.Y)
 
         self.img_og_tem = create_placeholder_img()
         self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
 
         # LABEL SETTING TEM
-        self.label_img_tem = tk.Label(self.frame_img, image=self.img_tem, relief=tk.RAISED)
+        self.label_img_tem = tk.Label(
+            self.frame_img, image=self.img_tem, relief=tk.RAISED
+        )
         self.label_img_tem.pack(side=tk.LEFT, fill=tk.Y)
-
 
         # Color boxes
         self.frame_boxes = tk.Frame(
@@ -131,18 +148,21 @@ class ArmyPainter(tk.Tk):
         self.color_dialog = colorchooser.Chooser(self)
 
         # Channel List Frame
-        self.frame_channel_list = tk.LabelFrame(self.frame_img_tools, text="RGBA Channel", relief=tk.RIDGE, bd=2)
+        self.frame_channel_list = tk.LabelFrame(
+            self.frame_img_tools, text="RGBA Channel", relief=tk.RIDGE, bd=2
+        )
         self.frame_channel_list.pack(side=tk.LEFT, fill=tk.Y)
 
         # Channel List Box
-        self.lb = tk.Listbox(self.frame_channel_list, selectmode=tk.MULTIPLE, height=4, width=9)
+        self.lb = tk.Listbox(
+            self.frame_channel_list, selectmode=tk.MULTIPLE, height=4, width=9
+        )
         self.lb.insert(0, "0 Red")
         self.lb.insert(1, "1 Green")
         self.lb.insert(2, "2 Blue")
         self.lb.insert(3, "3 Alpha")
         self.bind("<<ListboxSelect>>", self.select_channel)
         self.lb.pack(side=tk.TOP, fill=tk.Y)
-
 
         # Add alpha BTN
         self.add_alpha = tk.Button(
@@ -184,7 +204,7 @@ class ArmyPainter(tk.Tk):
             label="Open diffuse", command=self.open_diffuse, accelerator="Ctrl+O"
         )
         filemenu.add_command(
-            label="Open channel file", command=self.open_channel, accelerator="Ctrl+C"
+            label="Open channel file", command=self.open_channel, accelerator="Ctrl+A"
         )
         filemenu.add_command(label="Save", command=self.save, accelerator="Ctrl+S")
         filemenu.add_separator()
@@ -201,33 +221,78 @@ class ArmyPainter(tk.Tk):
         self.tool_view = tk.IntVar()
         toolmenu = tk.Menu(menubar, tearoff=0)
         toolmenu.add_radiobutton(
-            label="Image Tools", variable=self.tool_view, value=VIEW_IMG_TOOL, command=self.toggle_tool_view, accelerator="Ctrl+A"
+            label="Image Tools",
+            variable=self.tool_view,
+            value=VIEW_IMG_TOOL,
+            command=self.toggle_tool_view
         )
         toolmenu.add_radiobutton(
-            label="Batch Edit Tools", variable=self.tool_view, value=VIEW_BATCH_EDIT_TOOL, command=self.toggle_tool_view, accelerator="Ctrl+W"
+            label="Batch Edit Tools",
+            variable=self.tool_view,
+            value=VIEW_BATCH_EDIT_TOOL,
+            command=self.toggle_tool_view
         )
         menubar.add_cascade(label="Tools", menu=toolmenu)
 
         self.bind("<Control-o>", self.open_diffuse)
-        self.bind("<Control-c>", self.open_channel)
+        self.bind("<Control-a>", self.open_channel)
         self.bind("<Control-s>", self.save)
         self.bind("<Control-d>", self.batch_edit)
         self.bind("<Control-r>", self.reset_workspace)
         self.draw_rgb_value()
 
     def define_frame_batch_tool(self):
+        # Source format Checkbox list
         self.source_format_list = []
-        self.frame_source_format = tk.LabelFrame(self.frame_batch_tools, text="Source formats")
+        self.frame_source_format = tk.LabelFrame(
+            self.frame_batch_tools, text="Source formats"
+        )
+        self.frame_source_format.pack(side=tk.TOP, fill=tk.BOTH)
         for idx, filetype in enumerate(OPEN_FILETYPES[1:]):
             self.source_format_list.append(
-                tk.Checkbutton(self.frame_source_format, text=filetype[1].upper(), onvalue=True, offvalue=False)
+                tk.Checkbutton(
+                    self.frame_source_format,
+                    text=filetype[1][1:].upper(),
+                    onvalue=True,
+                    offvalue=False,
+                )
             )
             self.source_format_list[idx].pack(side=tk.LEFT)
-        # Add alpha BTN
-        self.add_alpha = tk.Button(
-            self.frame_source_format, text="Apply alpha", command=self.apply_alpha
+
+        # Destination Format Option Menu
+        self.frame_destination_format = tk.Frame(self.frame_batch_tools)
+        self.frame_destination_format.pack(side=tk.TOP, fill=tk.X)
+        tk.Label(self.frame_destination_format, text="Destination format:").pack(
+            side=tk.LEFT
         )
-        self.add_alpha.pack(side=tk.TOP, fill=tk.X)
+        self.dest_format = tk.StringVar(self)
+        format_list = [fmt[1][1:].upper() for fmt in SAVE_FILETYPES]
+        self.dest_format.set(format_list[0])
+        self.dest_menu = tk.OptionMenu(
+            self.frame_destination_format,
+            self.dest_format,
+            *format_list,
+        )
+        self.dest_menu.pack(side=tk.LEFT)
+
+        def select_folder(folder_path, Event=None):
+            folder_path.set(filedialog.askdirectory(initialdir=os.curdir))
+
+        def entry_template(frame, label):
+            entry_frame = tk.Frame(frame)
+            entry_frame.pack(side=tk.TOP, fill=tk.X)
+            tk.Label(entry_frame, text=label, width=len("Destination folder:"), anchor=tk.W).pack(side=tk.LEFT)
+            filepath = tk.StringVar()
+            entry_path = tk.Entry(entry_frame, textvariable=filepath, width=60, exportselection=0)
+            entry_path.pack(side=tk.LEFT)
+            tk.Button(
+                entry_frame, text="...", command=lambda: (select_folder(filepath))
+            ).pack(side=tk.LEFT)
+            return entry_frame
+
+        self.frame_batch_source_path = entry_template(self.frame_batch_tools, "Source folder:")
+        self.frame_batch_source_path = entry_template(self.frame_batch_tools, "Destination folder:")
+
 
     def toggle_tool_view(self, Event=None):
         if self.tool_view.get() is VIEW_IMG_TOOL:
