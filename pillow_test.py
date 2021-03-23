@@ -1,11 +1,10 @@
 import os
 import tkinter as tk
-from tkinter import colorchooser, font
+from tkinter import colorchooser
 from PIL import (
     Image,
     ImageChops,
     ImageOps,
-    ImageFont,
     ImageTk,
     ImageColor,
     ImageEnhance,
@@ -13,7 +12,6 @@ from PIL import (
 )
 from functools import partial
 from tkinter import filedialog
-from enum import Enum
 
 VIEW_IMG_TOOL = 0
 VIEW_BATCH_EDIT_TOOL = 1
@@ -71,6 +69,8 @@ class ArmyPainter(tk.Tk):
             relief=tk.RIDGE,
         )
         self.frame_img_tools.pack(side=tk.TOP, fill=tk.BOTH)
+        self.define_frame_img()
+        self.define_frame_img_tool()
 
         # Frame Batch Tool
         self.frame_batch_tools = tk.Frame(
@@ -80,32 +80,14 @@ class ArmyPainter(tk.Tk):
             bd=2,
             relief=tk.RIDGE,
         )
-        self.frame_batch_tools.pack_forget()
         self.define_frame_batch_tool()
+        self.frame_batch_tools.pack_forget()
+        self.reset_workspace()
 
-        # Frame IMG
-        self.frame_img = tk.Frame(self)
-        self.frame_img.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
+        self.define_menu()
+        self.draw_rgb_value()
 
-        # TODO: refactor img variable
-        self.img_og_dif = create_placeholder_img()
-        self.img_dif = ImageTk.PhotoImage(self.img_og_dif)
-
-        # Label SETTING DIF
-        self.label_img_dif = tk.Label(
-            self.frame_img, image=self.img_dif, relief=tk.RAISED
-        )
-        self.label_img_dif.pack(side=tk.LEFT, fill=tk.Y)
-
-        self.img_og_tem = create_placeholder_img()
-        self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
-
-        # LABEL SETTING TEM
-        self.label_img_tem = tk.Label(
-            self.frame_img, image=self.img_tem, relief=tk.RAISED
-        )
-        self.label_img_tem.pack(side=tk.LEFT, fill=tk.Y)
-
+    def define_frame_img_tool(self):
         # Color boxes
         self.frame_boxes = tk.Frame(
             self.frame_img_tools,
@@ -196,8 +178,8 @@ class ArmyPainter(tk.Tk):
             command=self.adjust_contrast,
         )
         self.contrast_slider.pack(side=tk.TOP, fill=tk.X)
-        self.reset_workspace()
 
+    def define_menu(self):
         menubar = tk.Menu(self)
         filemenu = tk.Menu(menubar, tearoff=0)
         filemenu.add_command(
@@ -224,13 +206,13 @@ class ArmyPainter(tk.Tk):
             label="Image Tools",
             variable=self.tool_view,
             value=VIEW_IMG_TOOL,
-            command=self.toggle_tool_view
+            command=self.toggle_tool_view,
         )
         toolmenu.add_radiobutton(
             label="Batch Edit Tools",
             variable=self.tool_view,
             value=VIEW_BATCH_EDIT_TOOL,
-            command=self.toggle_tool_view
+            command=self.toggle_tool_view,
         )
         menubar.add_cascade(label="Tools", menu=toolmenu)
 
@@ -239,7 +221,6 @@ class ArmyPainter(tk.Tk):
         self.bind("<Control-s>", self.save)
         self.bind("<Control-d>", self.batch_edit)
         self.bind("<Control-r>", self.reset_workspace)
-        self.draw_rgb_value()
 
     def define_frame_batch_tool(self):
         # Source format Checkbox list
@@ -281,21 +262,52 @@ class ArmyPainter(tk.Tk):
         def entry_template(frame, label):
             entry_frame = tk.Frame(frame)
             entry_frame.pack(side=tk.TOP, fill=tk.X)
-            tk.Label(entry_frame, text=label, width=len("Destination folder:"), anchor=tk.W).pack(side=tk.LEFT)
+            tk.Label(
+                entry_frame, text=label, width=len("Destination folder:"), anchor=tk.W
+            ).pack(side=tk.LEFT)
             filepath = tk.StringVar()
-            entry_path = tk.Entry(entry_frame, textvariable=filepath, width=60, exportselection=0)
+            entry_path = tk.Entry(
+                entry_frame, textvariable=filepath, width=60, exportselection=0
+            )
             entry_path.pack(side=tk.LEFT)
             tk.Button(
                 entry_frame, text="...", command=lambda: (select_folder(filepath))
             ).pack(side=tk.LEFT)
             return entry_frame
 
-        self.frame_batch_source_path = entry_template(self.frame_batch_tools, "Source folder:")
-        self.frame_batch_source_path = entry_template(self.frame_batch_tools, "Destination folder:")
-        tk.Button(
-            self.frame_batch_tools, text="Process", command=self.batch_edit
-            ).pack(side=tk.LEFT)
+        self.frame_batch_source_path = entry_template(
+            self.frame_batch_tools, "Source folder:"
+        )
+        self.frame_batch_source_path = entry_template(
+            self.frame_batch_tools, "Destination folder:"
+        )
+        tk.Button(self.frame_batch_tools, text="Process", command=self.batch_edit).pack(
+            side=tk.LEFT
+        )
 
+    def define_frame_img(self):
+        # Frame IMG
+        self.frame_img = tk.Frame(self)
+        self.frame_img.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
+
+        # TODO: refactor img variable
+        self.img_og_dif = create_placeholder_img()
+        self.img_dif = ImageTk.PhotoImage(self.img_og_dif)
+
+        # Label SETTING DIF
+        self.label_img_dif = tk.Label(
+            self.frame_img, image=self.img_dif, relief=tk.RAISED
+        )
+        self.label_img_dif.pack(side=tk.LEFT, fill=tk.Y)
+
+        self.img_og_tem = create_placeholder_img()
+        self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
+
+        # LABEL SETTING TEM
+        self.label_img_tem = tk.Label(
+            self.frame_img, image=self.img_tem, relief=tk.RAISED
+        )
+        self.label_img_tem.pack(side=tk.LEFT, fill=tk.Y)
 
     def toggle_tool_view(self, Event=None):
         if self.tool_view.get() is VIEW_IMG_TOOL:
