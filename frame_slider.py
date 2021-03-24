@@ -12,7 +12,7 @@ class FrameSlider(tk.Frame):
             from_=0.0,
             to=150.0,
             orient=tk.HORIZONTAL,
-            command=self._root().adjust_brightness,
+            command=self._root().set_brightness,
         )
         self.brightness_slider.pack(side=tk.TOP, fill=tk.X)
 
@@ -24,6 +24,6 @@ class FrameSlider(tk.Frame):
             from_=0.0,
             to=200.0,
             orient=tk.HORIZONTAL,
-            command=self._root().adjust_contrast,
+            command=self._root().set_contrast,
         )
         self.contrast_slider.pack(side=tk.TOP, fill=tk.X)

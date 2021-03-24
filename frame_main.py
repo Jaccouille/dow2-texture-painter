@@ -56,15 +56,18 @@ class ArmyPainter(tk.Tk):
     def __init__(self):
         super().__init__()
 
+        # Setting main window
         min_width = 678
         min_height = DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT
         dimension = f"{min_width}x{min_height}"
         self.geometry(dimension)
         self.minsize(min_width, min_height)
         self.title("Army Painter")
+
+        # RGBA channel of tem texture file
         self.tem_channels = []
 
-        # Frame IMG Tool
+        # Frame containing tools to edit the image
         self.frame_img_tools = tk.Frame(
             self,
             width=DEFAULT_IMG_SIZE * 2,
@@ -72,11 +75,19 @@ class ArmyPainter(tk.Tk):
             bd=2,
             relief=tk.RIDGE,
         )
-        self.define_frame_img_tool()
         self.frame_img_tools.pack(side=tk.TOP, fill=tk.BOTH)
+
+        # Defining slave widget
+        self.define_frame_img_tool()
+
+        # Frame containing the texture images
+        self.frame_img = tk.Frame(self)
+        self.frame_img.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
+
+        # Defining slave widget
         self.define_frame_img()
 
-        # Frame Batch Tool
+        # Frame containing the batch operation tools
         self.frame_batch_tools = tk.Frame(
             self,
             width=DEFAULT_IMG_SIZE * 2,
@@ -84,14 +95,19 @@ class ArmyPainter(tk.Tk):
             bd=2,
             relief=tk.RIDGE,
         )
-        self.define_frame_batch_tool()
         self.frame_batch_tools.pack_forget()
-        self.reset_workspace()
 
+        # Defining slave widget
+        self.define_frame_batch_tool()
+
+        # Defining menubar
         self.define_menu()
 
+        # Initialize the default workspace
+        self.reset_workspace()
+
     def define_frame_img_tool(self):
-        # Color boxes
+        # Setting color boxes frame
         self.frame_color_chooser = FrameColorChooser(
             self.frame_img_tools,
             width=COLOR_BOX_SIZE * 4 + 12,
@@ -101,52 +117,63 @@ class ArmyPainter(tk.Tk):
         )
         self.frame_color_chooser.pack(side=tk.LEFT, fill=tk.Y)
 
+        # Setting channel list frame
         self.frame_channel_select = FrameChannelList(
             self.frame_img_tools, text="RGBA Channel", relief=tk.RIDGE, bd=2
         )
         self.bind("<<ListboxSelect>>", self.select_channel)
         self.frame_channel_select.pack(side=tk.LEFT, fill=tk.Y)
 
+        # Setting sliders
         self.frame_sliders = FrameSlider(self.frame_img_tools, relief=tk.RIDGE, bd=2)
         self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
 
     def define_menu(self):
         menubar = tk.Menu(self)
-        filemenu = tk.Menu(menubar, tearoff=0)
-        filemenu.add_command(
-            label="Open diffuse", command=self.open_diffuse, accelerator="Ctrl+O"
-        )
-        filemenu.add_command(
-            label="Open channel file", command=self.open_channel, accelerator="Ctrl+A"
-        )
-        filemenu.add_command(label="Save", command=self.save, accelerator="Ctrl+S")
-        filemenu.add_separator()
-        filemenu.add_command(label="Exit", command=self.quit)
-        menubar.add_cascade(label="File", menu=filemenu)
-        self.config(menu=menubar)
 
-        editmenu = tk.Menu(menubar, tearoff=0)
-        editmenu.add_command(
-            label="Reset workspace", command=self.reset_workspace, accelerator="Ctrl+R"
-        )
-        menubar.add_cascade(label="Edit", menu=editmenu)
+        def define_filemenu():
+            filemenu = tk.Menu(menubar, tearoff=0)
+            filemenu.add_command(
+                label="Open diffuse", command=self.open_diffuse, accelerator="Ctrl+O"
+            )
+            filemenu.add_command(
+                label="Open channel file", command=self.open_channel, accelerator="Ctrl+A"
+            )
+            filemenu.add_command(label="Save", command=self.save, accelerator="Ctrl+S")
+            filemenu.add_separator()
+            filemenu.add_command(label="Exit", command=self.quit)
+            menubar.add_cascade(label="File", menu=filemenu)
+            self.config(menu=menubar)
 
-        self.tool_view = tk.IntVar()
-        toolmenu = tk.Menu(menubar, tearoff=0)
-        toolmenu.add_radiobutton(
-            label="Image Tools",
-            variable=self.tool_view,
-            value=VIEW_IMG_TOOL,
-            command=self.toggle_tool_view,
-        )
-        toolmenu.add_radiobutton(
-            label="Batch Edit Tools",
-            variable=self.tool_view,
-            value=VIEW_BATCH_EDIT_TOOL,
-            command=self.toggle_tool_view,
-        )
-        menubar.add_cascade(label="Tools", menu=toolmenu)
+        def define_editmenu():
+            editmenu = tk.Menu(menubar, tearoff=0)
+            editmenu.add_command(
+                label="Reset workspace", command=self.reset_workspace, accelerator="Ctrl+R"
+            )
+            menubar.add_cascade(label="Edit", menu=editmenu)
 
+        def define_toolmenu():
+            self.tool_view = tk.IntVar()
+            toolmenu = tk.Menu(menubar, tearoff=0)
+            toolmenu.add_radiobutton(
+                label="Image Tools",
+                variable=self.tool_view,
+                value=VIEW_IMG_TOOL,
+                command=self.toggle_tool_view,
+            )
+            toolmenu.add_radiobutton(
+                label="Batch Edit Tools",
+                variable=self.tool_view,
+                value=VIEW_BATCH_EDIT_TOOL,
+                command=self.toggle_tool_view,
+            )
+            menubar.add_cascade(label="Tools", menu=toolmenu)
+
+        define_editmenu()
+        define_filemenu()
+        define_toolmenu()
+
+        # Define Menu binding
         self.bind("<Control-o>", self.open_diffuse)
         self.bind("<Control-a>", self.open_channel)
         self.bind("<Control-s>", self.save)
@@ -190,7 +217,7 @@ class ArmyPainter(tk.Tk):
         def select_folder(folder_path, Event=None):
             folder_path.set(filedialog.askdirectory(initialdir=os.curdir))
 
-        def entry_template(frame, label):
+        def widget_entry_template(frame, label):
             entry_frame = tk.Frame(frame)
             entry_frame.pack(side=tk.TOP, fill=tk.X)
             tk.Label(
@@ -206,10 +233,10 @@ class ArmyPainter(tk.Tk):
             ).pack(side=tk.LEFT)
             return entry_frame
 
-        self.frame_batch_source_path = entry_template(
+        self.frame_batch_source_path = widget_entry_template(
             self.frame_batch_tools, "Source folder:"
         )
-        self.frame_batch_source_path = entry_template(
+        self.frame_batch_source_path = widget_entry_template(
             self.frame_batch_tools, "Destination folder:"
         )
         tk.Button(self.frame_batch_tools, text="Process", command=self.batch_edit).pack(
@@ -217,10 +244,6 @@ class ArmyPainter(tk.Tk):
         )
 
     def define_frame_img(self):
-        # Frame IMG
-        self.frame_img = tk.Frame(self)
-        self.frame_img.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
-
         # TODO: refactor img variable
         self.img_og_dif = create_placeholder_img()
         self.img_dif = ImageTk.PhotoImage(self.img_og_dif)
@@ -248,21 +271,35 @@ class ArmyPainter(tk.Tk):
             self.frame_img_tools.pack_forget()
             self.frame_batch_tools.pack(side=tk.TOP, fill=tk.BOTH)
 
-    def adjust_brightness(self, value: float):
+    def set_brightness(self, value: float):
         self.refresh_workspace()
 
-    def adjust_contrast(self, value: float):
+    def set_contrast(self, value: float):
         self.refresh_workspace()
 
     def save(self, Event=None):
+        """Save image from current workspace
+
+        :param Event: widget triggered event, defaults to None
+        :type Event: [type], optional
+        """
         filename = filedialog.asksaveasfilename(
             initialdir=os.curdir, filetypes=SAVE_FILETYPES
         )
         self.img_workspace.save(filename)
 
-    def process_img(self, chan: Image, color):
-        img = ImageOps.colorize(chan, (0, 0, 0), color).convert("RGBA")
-        # mask = chan.point(lambda i: i < 50 and 255)
+    def process_img(self, channel: Image, color: tuple):
+        """Process image with current workspace setting
+
+        :param channel: channel data selected from the tem file, used as a layer
+        to colorize the image
+        :type channel: Image
+        :param color: RGBA Color used to colorize the image
+        :type color: tuple
+        :return: Processed Image
+        :rtype: Image
+        """
+        img = ImageOps.colorize(channel, (0, 0, 0), color).convert("RGBA")
         enhancer_contrast = ImageEnhance.Contrast(img)
         img = enhancer_contrast.enhance(self.frame_sliders.contrast_slider.get() / 100)
         enhancer_brightness = ImageEnhance.Brightness(img)
@@ -272,31 +309,43 @@ class ArmyPainter(tk.Tk):
         return img
 
     def refresh_workspace(self):
+        """Refresh the workspace image with current settings
+        """
         self.img_workspace = self.img_og_dif.copy()
-        for idx, chan in enumerate(self.tem_channels):
+        for idx, channel in enumerate(self.tem_channels):
             color = ImageColor.getrgb(self.frame_color_chooser.color_boxes[idx]["bg"])
             if color != (128, 128, 128):
-                chan.convert("L")
-                processed_img = self.process_img(chan, color)
+                channel.convert("L")
+                processed_img = self.process_img(channel, color)
                 self.img_workspace = ImageChops.add(self.img_workspace, processed_img)
         self.img_dif = ImageTk.PhotoImage(self.img_workspace)
         self.label_img_dif.config(image=self.img_dif)
 
     def refresh_window_size(self):
+        """Refresh window size using current images width
+        """
         img_dif_size = self.img_workspace.size
         img_tem_size = self.img_og_tem.size
         new_width = img_dif_size[0] + img_tem_size[0]
+
         # Assuming both image got same size
         new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
         self.geometry(f"{new_width}x{new_height}")
         self.update()
 
     def apply_alpha(self):
+        """Takes selected channel layer and apply alpha on the workspace image
+        """
         for i in self.frame_channel_select.lb.curselection():
             alpha_mask = ImageChops.invert(self.tem_channels[i])
             self.img_workspace.putalpha(alpha_mask)
 
     def select_channel(self, Event=None):
+        """Register channel selected from the Channel list listbox
+
+        :param Event: event triggered from widget, defaults to None
+        :type Event: [type], optional
+        """
         new_img = Image.new("L", self.img_og_tem.size)
         for i in self.frame_channel_select.lb.curselection():
             # TODO: think about clean implementation
@@ -307,16 +356,22 @@ class ArmyPainter(tk.Tk):
         self.img = ImageTk.PhotoImage(new_img)
         self.label_img_tem.config(image=self.img)
 
-    def load_file(self, filename: str):
+    def load_file(self, filepath: str):
+        """Load diffuse and tem texture and set it as workspace image,
+        both texture have to be located in the same directory
+
+        :param filepath: path to file
+        :type filepath: str
+        """
         # IMG LOADER
         # Diffuse image
-        self.img_og_dif = Image.open(filename)
+        self.img_og_dif = Image.open(filepath)
         background = Image.new("RGBA", self.img_og_dif.size, (0, 0, 0))
         self.img_og_dif = Image.alpha_composite(background, self.img_og_dif)
 
         # Load associated tem file
-        tem_filename = filename.replace("_dif.", "_tem.")
-        self.load_channel_packed_file(tem_filename)
+        tem_filepath = filepath.replace("_dif.", "_tem.")
+        self.load_channel_packed_file(tem_filepath)
         self.refresh_workspace()
         self.refresh_window_size()
 
