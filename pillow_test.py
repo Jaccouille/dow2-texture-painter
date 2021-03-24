@@ -12,6 +12,9 @@ from PIL import (
 )
 from functools import partial
 from tkinter import filedialog
+from frame_color_box import FrameColorChooser
+from frame_channel_list import FrameChannelList
+from frame_slider import FrameSlider
 
 VIEW_IMG_TOOL = 0
 VIEW_BATCH_EDIT_TOOL = 1
@@ -53,10 +56,11 @@ class ArmyPainter(tk.Tk):
     def __init__(self):
         super().__init__()
 
-        min_size = (DEFAULT_IMG_SIZE * 2 + 12, DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT)
-        dimension = f"{min_size[0]}x{min_size[1]}"
+        min_width = 678
+        min_height = DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT
+        dimension = f"{min_width}x{min_height}"
         self.geometry(dimension)
-        self.minsize(min_size[0], min_size[1])
+        self.minsize(min_width, min_height)
         self.title("Army Painter")
         self.tem_channels = []
 
@@ -68,9 +72,9 @@ class ArmyPainter(tk.Tk):
             bd=2,
             relief=tk.RIDGE,
         )
+        self.define_frame_img_tool()
         self.frame_img_tools.pack(side=tk.TOP, fill=tk.BOTH)
         self.define_frame_img()
-        self.define_frame_img_tool()
 
         # Frame Batch Tool
         self.frame_batch_tools = tk.Frame(
@@ -85,99 +89,26 @@ class ArmyPainter(tk.Tk):
         self.reset_workspace()
 
         self.define_menu()
-        self.draw_rgb_value()
 
     def define_frame_img_tool(self):
         # Color boxes
-        self.frame_boxes = tk.Frame(
+        self.frame_color_chooser = FrameColorChooser(
             self.frame_img_tools,
-            relief=tk.SOLID,
-            width=COLOR_BOX_SIZE * 4 + 4,
-            height=COLOR_BTN_HEIGHT + COLOR_BOX_SIZE,
+            width=COLOR_BOX_SIZE * 4 + 12,
+            height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT,
+            bd=0,
+            relief=tk.RIDGE,
         )
-        # self.frame_boxes.place(anchor=tk.NW)
-        self.frame_boxes.pack(side=tk.LEFT, fill=tk.Y)
+        self.frame_color_chooser.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.color_boxes = []
-        self.color_buttons = []
-        for i in range(0, 4):
-            self.color_boxes.append(
-                tk.Canvas(
-                    self.frame_boxes,
-                    bg="gray",
-                    relief=tk.RAISED,
-                    bd=2,
-                    height=COLOR_BOX_SIZE,
-                    width=COLOR_BOX_SIZE,
-                )
-            )
-            self.color_boxes[i].place(
-                anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=COLOR_BTN_HEIGHT
-            )
-            self.color_buttons.append(
-                tk.Button(
-                    self.frame_boxes,
-                    text=f"Choose Color {i}",
-                    wraplength=COLOR_BOX_SIZE,
-                    relief=tk.RAISED,
-                    bd=2,
-                    command=partial(self.apply_color, i),
-                )
-            )
-            self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i + 1, y=0)
-
-        # Color Dialog that open upon btn click
-        self.color_dialog = colorchooser.Chooser(self)
-
-        # Channel List Frame
-        self.frame_channel_list = tk.LabelFrame(
+        self.frame_channel_select = FrameChannelList(
             self.frame_img_tools, text="RGBA Channel", relief=tk.RIDGE, bd=2
         )
-        self.frame_channel_list.pack(side=tk.LEFT, fill=tk.Y)
-
-        # Channel List Box
-        self.lb = tk.Listbox(
-            self.frame_channel_list, selectmode=tk.MULTIPLE, height=4, width=9
-        )
-        self.lb.insert(0, "0 Red")
-        self.lb.insert(1, "1 Green")
-        self.lb.insert(2, "2 Blue")
-        self.lb.insert(3, "3 Alpha")
         self.bind("<<ListboxSelect>>", self.select_channel)
-        self.lb.pack(side=tk.TOP, fill=tk.Y)
+        self.frame_channel_select.pack(side=tk.LEFT, fill=tk.Y)
 
-        # Add alpha BTN
-        self.add_alpha = tk.Button(
-            self.frame_channel_list, text="Apply alpha", command=self.apply_alpha
-        )
-        self.add_alpha.pack(side=tk.TOP, fill=tk.X)
-
-        self.frame_sliders = tk.Frame(self.frame_img_tools, relief=tk.RIDGE, bd=2)
+        self.frame_sliders = FrameSlider(self.frame_img_tools, relief=tk.RIDGE, bd=2)
         self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
-
-        # Brightness slider
-        self.brightness_slider = tk.Scale(
-            self.frame_sliders,
-            label="Brightness",
-            length=150,
-            from_=0.0,
-            to=150.0,
-            orient=tk.HORIZONTAL,
-            command=self.adjust_brightness,
-        )
-        self.brightness_slider.pack(side=tk.TOP, fill=tk.X)
-
-        # Contrast slider
-        self.contrast_slider = tk.Scale(
-            self.frame_sliders,
-            label="Contrast",
-            length=200,
-            from_=0.0,
-            to=200.0,
-            orient=tk.HORIZONTAL,
-            command=self.adjust_contrast,
-        )
-        self.contrast_slider.pack(side=tk.TOP, fill=tk.X)
 
     def define_menu(self):
         menubar = tk.Menu(self)
@@ -333,15 +264,17 @@ class ArmyPainter(tk.Tk):
         img = ImageOps.colorize(chan, (0, 0, 0), color).convert("RGBA")
         # mask = chan.point(lambda i: i < 50 and 255)
         enhancer_contrast = ImageEnhance.Contrast(img)
-        img = enhancer_contrast.enhance(self.contrast_slider.get() / 100)
+        img = enhancer_contrast.enhance(self.frame_sliders.contrast_slider.get() / 100)
         enhancer_brightness = ImageEnhance.Brightness(img)
-        img = enhancer_brightness.enhance(self.brightness_slider.get() / 100)
+        img = enhancer_brightness.enhance(
+            self.frame_sliders.brightness_slider.get() / 100
+        )
         return img
 
     def refresh_workspace(self):
         self.img_workspace = self.img_og_dif.copy()
         for idx, chan in enumerate(self.tem_channels):
-            color = ImageColor.getrgb(self.color_boxes[idx]["bg"])
+            color = ImageColor.getrgb(self.frame_color_chooser.color_boxes[idx]["bg"])
             if color != (128, 128, 128):
                 chan.convert("L")
                 processed_img = self.process_img(chan, color)
@@ -349,29 +282,23 @@ class ArmyPainter(tk.Tk):
         self.img_dif = ImageTk.PhotoImage(self.img_workspace)
         self.label_img_dif.config(image=self.img_dif)
 
-    def refresh_window_size(self, Event=None):
+    def refresh_window_size(self):
         img_dif_size = self.img_workspace.size
         img_tem_size = self.img_og_tem.size
         new_width = img_dif_size[0] + img_tem_size[0]
         # Assuming both image got same size
         new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
         self.geometry(f"{new_width}x{new_height}")
-
-    def apply_color(self, btn_idx: int):
-        _, color = self.color_dialog.show()
-        if color is not None:
-            self.color_boxes[btn_idx]["bg"] = color
-            self.draw_rgb_value()
-        self.refresh_workspace()
+        self.update()
 
     def apply_alpha(self):
-        for i in self.lb.curselection():
+        for i in self.frame_channel_select.lb.curselection():
             alpha_mask = ImageChops.invert(self.tem_channels[i])
             self.img_workspace.putalpha(alpha_mask)
 
     def select_channel(self, Event=None):
         new_img = Image.new("L", self.img_og_tem.size)
-        for i in self.lb.curselection():
+        for i in self.frame_channel_select.lb.curselection():
             # TODO: think about clean implementation
             try:
                 new_img = ImageChops.add(new_img, self.tem_channels[i])
@@ -421,24 +348,13 @@ class ArmyPainter(tk.Tk):
 
     def reset_workspace(self, Event=None):
         self.img_workspace = self.img_og_dif
-        for color_box in self.color_boxes:
+        for color_box in self.frame_color_chooser.color_boxes:
             color_box["bg"] = "gray"
-        self.brightness_slider.set(40)
-        self.contrast_slider.set(100)
-        self.lb.selection_set(first=0, last=3)
+        self.frame_sliders.brightness_slider.set(40)
+        self.frame_sliders.contrast_slider.set(100)
+        self.frame_channel_select.lb.selection_set(first=0, last=3)
         self.select_channel()
         self.refresh_workspace()
-
-    def draw_rgb_value(self):
-        for color_box in self.color_boxes:
-            color = str(color_box["bg"])
-            color_box.delete("all")
-            color_box.create_text(
-                COLOR_BOX_SIZE / 2,
-                COLOR_BOX_SIZE / 2,
-                text=color,
-                font=("Arial", 10, "bold"),
-            )
 
 
 if __name__ == "__main__":
