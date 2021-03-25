@@ -5,6 +5,7 @@ from functools import partial
 COLOR_BOX_SIZE = 90
 COLOR_BTN_HEIGHT = 26
 
+
 class FrameColorChooser(tk.Frame):
     def __init__(self, master=None, cnf={}, **kw):
         super(FrameColorChooser, self).__init__(master=master, cnf={}, **kw)
@@ -28,6 +29,8 @@ class FrameColorChooser(tk.Frame):
                     width=COLOR_BOX_SIZE,
                 )
             )
+            self.color_boxes[i].bind(
+                "<Button-1>", partial(self.apply_color, i))
             self.color_boxes[i].place(
                 anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=COLOR_BTN_HEIGHT
             )
@@ -41,10 +44,11 @@ class FrameColorChooser(tk.Frame):
                     command=partial(self.apply_color, i),
                 )
             )
-            self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i + i * 1, y=0)
+            self.color_buttons[i].place(
+                anchor=tk.NW, x=COLOR_BOX_SIZE * i + i * 1, y=0)
         self.draw_rgb_value()
 
-    def apply_color(self, btn_idx: int):
+    def apply_color(self, btn_idx: int, Event=None):
         _, color = self.color_dialog.show()
         if color is not None:
             self.color_boxes[btn_idx]["bg"] = color
