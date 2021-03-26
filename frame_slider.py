@@ -1,5 +1,6 @@
 import tkinter as tk
 
+
 class FrameSlider(tk.Frame):
     def __init__(self, master=None, cnf={}, **kw):
         super(FrameSlider, self).__init__(master=master, cnf={}, **kw)

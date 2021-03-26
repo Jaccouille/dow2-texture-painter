@@ -1,6 +1,5 @@
 import os
 import tkinter as tk
-from tkinter import colorchooser
 from PIL import (
     Image,
     ImageChops,
@@ -10,13 +9,20 @@ from PIL import (
     ImageEnhance,
     ImageDraw,
 )
-from functools import partial
 from tkinter import filedialog
 from frame_color_box import FrameColorChooser
 from frame_channel_list import FrameChannelList
 from frame_slider import FrameSlider
 from frame_batch_tool import FrameBatchTool
-from constant import *
+from constant import (
+    DEFAULT_IMG_SIZE,
+    COLOR_BOX_SIZE,
+    COLOR_BTN_HEIGHT,
+    FRAME_TOOL_HEIGHT,
+    SAVE_FILETYPES,
+    OPEN_FILETYPES,
+    OPEN_EXT_LIST,
+)
 
 VIEW_IMG_TOOL = 0
 VIEW_BATCH_EDIT_TOOL = 1
@@ -106,7 +112,8 @@ class ArmyPainter(tk.Tk):
         self.frame_channel_select.pack(side=tk.LEFT, fill=tk.Y)
 
         # Setting sliders
-        self.frame_sliders = FrameSlider(self.frame_img_tools, relief=tk.RIDGE, bd=2)
+        self.frame_sliders = FrameSlider(
+            self.frame_img_tools, relief=tk.RIDGE, bd=2)
         self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
 
     def define_menu(self):
@@ -115,14 +122,17 @@ class ArmyPainter(tk.Tk):
         def define_filemenu():
             filemenu = tk.Menu(menubar, tearoff=0)
             filemenu.add_command(
-                label="Open diffuse", command=self.open_diffuse, accelerator="Ctrl+O"
+                label="Open diffuse",
+                command=self.open_diffuse,
+                accelerator="Ctrl+O"
             )
             filemenu.add_command(
                 label="Open channel file",
                 command=self.open_channel,
                 accelerator="Ctrl+A",
             )
-            filemenu.add_command(label="Save", command=self.save, accelerator="Ctrl+S")
+            filemenu.add_command(
+                label="Save", command=self.save, accelerator="Ctrl+S")
             filemenu.add_separator()
             filemenu.add_command(label="Exit", command=self.quit)
             menubar.add_cascade(label="File", menu=filemenu)
@@ -154,8 +164,8 @@ class ArmyPainter(tk.Tk):
             )
             menubar.add_cascade(label="Tools", menu=toolmenu)
 
-        define_editmenu()
         define_filemenu()
+        define_editmenu()
         define_toolmenu()
 
         # Define Menu binding
@@ -213,8 +223,8 @@ class ArmyPainter(tk.Tk):
     def process_img(self, channel: Image, color: tuple):
         """Process image with current workspace setting
 
-        :param channel: channel data selected from the tem file, used as a layer
-        to colorize the image
+        :param channel: channel data selected from the tem file, used as a
+        layer to colorize the image
         :type channel: Image
         :param color: RGBA Color used to colorize the image
         :type color: tuple
@@ -223,7 +233,8 @@ class ArmyPainter(tk.Tk):
         """
         img = ImageOps.colorize(channel, (0, 0, 0), color).convert("RGBA")
         enhancer_contrast = ImageEnhance.Contrast(img)
-        img = enhancer_contrast.enhance(self.frame_sliders.contrast_slider.get() / 100)
+        img = enhancer_contrast.enhance(
+            self.frame_sliders.contrast_slider.get() / 100)
         enhancer_brightness = ImageEnhance.Brightness(img)
         img = enhancer_brightness.enhance(
             self.frame_sliders.brightness_slider.get() / 100
@@ -234,11 +245,13 @@ class ArmyPainter(tk.Tk):
         """Refresh the workspace image with current settings"""
         self.img_workspace = self.img_og_dif.copy()
         for idx, channel in enumerate(self.tem_channels):
-            color = ImageColor.getrgb(self.frame_color_chooser.color_boxes[idx]["bg"])
+            color = ImageColor.getrgb(
+                self.frame_color_chooser.color_boxes[idx]["bg"])
             if color != (128, 128, 128):
                 channel.convert("L")
                 processed_img = self.process_img(channel, color)
-                self.img_workspace = ImageChops.add(self.img_workspace, processed_img)
+                self.img_workspace = ImageChops.add(
+                    self.img_workspace, processed_img)
         self.img_dif = ImageTk.PhotoImage(self.img_workspace)
         self.label_img_dif.config(image=self.img_dif)
 
@@ -254,7 +267,8 @@ class ArmyPainter(tk.Tk):
         self.update()
 
     def apply_alpha(self):
-        """Takes selected channel layer and apply alpha on the workspace image"""
+        """Takes selected channel layer and apply alpha on the workspace
+        image"""
         for i in self.frame_channel_select.lb.curselection():
             alpha_mask = ImageChops.invert(self.tem_channels[i])
             self.img_workspace.putalpha(alpha_mask)
@@ -289,10 +303,7 @@ class ArmyPainter(tk.Tk):
         self.img_og_dif = Image.alpha_composite(background, self.img_og_dif)
 
         # Load associated tem file
-        if self.frame_batch_tools.dif_pattern.get() != "" and self.frame_batch_tools.tem_pattern.get() != "":
-            tem_filepath = filepath.replace(self.frame_batch_tools.dif_pattern.get(), self.frame_batch_tools.tem_pattern.get())
-        else:
-            tem_filepath = filepath.replace("_dif.", "_tem.")
+        tem_filepath = filepath.replace("_dif.", "_tem.")
         self.load_channel_packed_file(tem_filepath)
         self.refresh_workspace()
         self.refresh_window_size()
@@ -305,7 +316,8 @@ class ArmyPainter(tk.Tk):
         self.select_channel()
 
     def open_diffuse(self, Event=None):
-        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        f = filedialog.askopenfile(
+            initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         self.load_file(f.name)
 
     def open_channel(self, Event=None):
@@ -315,13 +327,12 @@ class ArmyPainter(tk.Tk):
             self.load_channel_packed_file(f.name)
 
     def batch_edit(self, Event=None):
-        source = self.frame_batch_tools.frame_batch_source_path.folder_path.get()
-        dest = self.frame_batch_tools.frame_batch_destination_path.folder_path.get()
+        source = self.frame_batch_tools.frame_batch_src_path.entry_value.get()
+        dest = self.frame_batch_tools.frame_batch_dest_path.entry_value.get()
         dest_format = self.frame_batch_tools.dest_format.get().lower()
-        dif_file_pattern = self.frame_batch_tools.dif_pattern.get()
         for filename in os.listdir(source):
             name, ext = os.path.splitext(filename)
-            if ext[1:] in OPEN_EXT_LIST and name.endswith(dif_file_pattern):
+            if ext[1:] in OPEN_EXT_LIST and name.endswith("_dif"):
                 self.load_file(f"{source}/{filename}")
                 new_filename = name + f".{dest_format}"
                 self.img_workspace.save(f"{dest}/{new_filename}")

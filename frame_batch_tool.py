@@ -1,6 +1,6 @@
 import os
 import tkinter as tk
-from constant import OPEN_FILETYPES, SAVE_FILETYPES, SAVE_EXT_LIST
+from constant import OPEN_FILETYPES, SAVE_EXT_LIST
 from tkinter import filedialog
 
 
@@ -29,7 +29,9 @@ class FrameBatchTool(tk.Frame):
         # Destination Format Option Menu
         self.frame_destination_format = tk.Frame(self)
         self.frame_destination_format.pack(side=tk.TOP, fill=tk.X)
-        tk.Label(self.frame_destination_format, text="Destination format:").pack(
+        tk.Label(self.frame_destination_format,
+                 text="Destination format:").pack(
+
             side=tk.LEFT
         )
         self.dest_format = tk.StringVar(self)
@@ -52,14 +54,17 @@ class FrameBatchTool(tk.Frame):
         def widget_entry_template(
             frame,
             label,
-            has_button,
             starting_value="",
             entry_width=60,
             label_width=len("Destination folder:"),
         ):
             entry_frame = tk.Frame(frame)
             entry_frame.pack(side=tk.TOP, fill=tk.X)
-            tk.Label(entry_frame, text=label, width=label_width, anchor=tk.W).pack(
+            tk.Label(
+                entry_frame,
+                text=label,
+                width=label_width,
+                anchor=tk.W).pack(
                 side=tk.LEFT
             )
             entry_frame.entry_value = tk.StringVar(value=starting_value)
@@ -70,26 +75,14 @@ class FrameBatchTool(tk.Frame):
                 exportselection=0,
             )
             entry_path.pack(side=tk.LEFT)
-            if has_button:
-                tk.Button(
-                    entry_frame,
-                    text="...",
-                    command=lambda: (select_folder(entry_frame.entry_value)),
-                ).pack(side=tk.LEFT)
+            tk.Button(
+                entry_frame,
+                text="...",
+                command=lambda: (select_folder(entry_frame.entry_value)),
+            ).pack(side=tk.LEFT)
             return entry_frame
 
-        self.frame_batch_source_path = widget_entry_template(
-            self, "Source folder:", True
-        )
-        self.frame_batch_destination_path = widget_entry_template(
-            self, "Destination folder:", True
-        )
-
-        label_tem_pattern = "Channel packed Filename pattern:"
-        self.frame_dif_pattern = widget_entry_template(
-            self, "Diffuse Filename pattern:", False, "_dif", 10, len(label_tem_pattern)
-        )
-
-        self.frame_tem_pattern = widget_entry_template(
-            self, label_tem_pattern, False, "_tem", 10, len(label_tem_pattern)
-        )
+        self.frame_batch_src_path = widget_entry_template(
+            self, "Source folder:")
+        self.frame_batch_dest_path = widget_entry_template(
+            self, "Destination folder:")
