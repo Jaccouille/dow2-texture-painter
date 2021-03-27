@@ -14,6 +14,7 @@ from frame_color_box import FrameColorChooser
 from frame_channel_list import FrameChannelList
 from frame_slider import FrameSlider
 from frame_batch_tool import FrameBatchTool
+from frame_pattern_list import FramePatternList
 from constant import (
     DEFAULT_IMG_SIZE,
     COLOR_BOX_SIZE,
@@ -23,12 +24,16 @@ from constant import (
     OPEN_FILETYPES,
     OPEN_EXT_LIST,
 )
+from army_color import army_color_preset
 
 VIEW_IMG_TOOL = 0
 VIEW_BATCH_EDIT_TOOL = 1
+PATTERN_LIST_DEFAULT_WIDTH = 166
 
 path = os.path.dirname(__file__)
 
+def rgb_to_hex(rgb):
+    return '#' + '%02x%02x%02x' % rgb
 
 def create_placeholder_img():
     img = Image.new(
@@ -44,7 +49,7 @@ class ArmyPainter(tk.Tk):
         super().__init__()
 
         # Setting main window
-        min_width = 678
+        min_width = 256 * 2 + PATTERN_LIST_DEFAULT_WIDTH
         min_height = DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT
         dimension = f"{min_width}x{min_height}"
         self.geometry(dimension)
@@ -73,6 +78,11 @@ class ArmyPainter(tk.Tk):
 
         # Defining slave widget
         self.define_frame_img()
+        self.frame_army_pattern = FramePatternList(
+            self.frame_img
+        )
+        self.frame_army_pattern.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.bind("<<ListboxSelect>>", self.on_listbox_select)
 
         # Frame containing the batch operation tools
         self.frame_batch_tools = FrameBatchTool(
@@ -108,7 +118,6 @@ class ArmyPainter(tk.Tk):
         self.frame_channel_select = FrameChannelList(
             self.frame_img_tools, text="RGBA Channel", relief=tk.RIDGE, bd=2
         )
-        self.bind("<<ListboxSelect>>", self.select_channel)
         self.frame_channel_select.pack(side=tk.LEFT, fill=tk.Y)
 
         # Setting sliders
@@ -259,7 +268,7 @@ class ArmyPainter(tk.Tk):
         """Refresh window size using current images width"""
         img_dif_size = self.img_workspace.size
         img_tem_size = self.img_og_tem.size
-        new_width = img_dif_size[0] + img_tem_size[0]
+        new_width = img_dif_size[0] + img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
 
         # Assuming both image got same size
         new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
@@ -272,6 +281,20 @@ class ArmyPainter(tk.Tk):
         for i in self.frame_channel_select.lb.curselection():
             alpha_mask = ImageChops.invert(self.tem_channels[i])
             self.img_workspace.putalpha(alpha_mask)
+
+    def on_listbox_select(self, Event=None):
+        if type(Event.widget.master) is FrameChannelList:
+            self.select_channel()
+        # TODO: Refactor following code so with frame color class
+        elif type(Event.widget.master) is FramePatternList:
+            idx = self.frame_army_pattern.lb.curselection()[0]
+            army_name = self.frame_army_pattern.lb.get(idx)
+            color_list = army_color_preset.get(army_name)
+            self.frame_color_chooser.color_boxes
+            for color, color_box in zip(color_list, self.frame_color_chooser.color_boxes):
+                color_box["bg"] = rgb_to_hex(color)
+            self.frame_color_chooser.draw_rgb_value()
+            self.refresh_workspace()
 
     def select_channel(self, Event=None):
         """Register channel selected from the Channel list listbox
@@ -346,6 +369,9 @@ class ArmyPainter(tk.Tk):
         self.frame_channel_select.lb.selection_set(first=0, last=3)
         self.select_channel()
         self.refresh_workspace()
+
+    def save_pattern(self):
+        raise NotImplemented
 
 
 if __name__ == "__main__":
