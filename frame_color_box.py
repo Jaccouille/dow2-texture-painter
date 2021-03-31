@@ -22,14 +22,15 @@ class FrameColorChooser(tk.Frame):
             self.color_boxes.append(
                 tk.Canvas(
                     self,
-                    bg="gray",
+                    bg="#808080",
                     relief=tk.RAISED,
                     bd=2,
                     height=COLOR_BOX_SIZE,
                     width=COLOR_BOX_SIZE,
                 )
             )
-            self.color_boxes[i].bind("<Button-1>", partial(self.apply_color, i))
+            self.color_boxes[i].bind(
+                "<Button-1>", partial(self.apply_color, i))
             self.color_boxes[i].place(
                 anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=COLOR_BTN_HEIGHT
             )
@@ -43,7 +44,8 @@ class FrameColorChooser(tk.Frame):
                     command=partial(self.apply_color, i),
                 )
             )
-            self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i + i * 1, y=0)
+            self.color_buttons[i].place(
+                anchor=tk.NW, x=COLOR_BOX_SIZE * i + i * 1, y=0)
         self.draw_rgb_value()
 
     def apply_color(self, btn_idx: int, Event=None):

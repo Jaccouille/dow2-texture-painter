@@ -10,6 +10,7 @@ from PIL import (
     ImageDraw,
 )
 from tkinter import filedialog
+from tkinter.simpledialog import askstring
 from frame_color_box import FrameColorChooser
 from frame_channel_list import FrameChannelList
 from frame_slider import FrameSlider
@@ -24,7 +25,8 @@ from constant import (
     OPEN_FILETYPES,
     OPEN_EXT_LIST,
 )
-from army_color import army_color_preset
+import color_pattern_handler
+from color_pattern_handler import army_color_pattern
 
 VIEW_IMG_TOOL = 0
 VIEW_BATCH_EDIT_TOOL = 1
@@ -32,8 +34,10 @@ PATTERN_LIST_DEFAULT_WIDTH = 166
 
 path = os.path.dirname(__file__)
 
+
 def rgb_to_hex(rgb):
     return '#' + '%02x%02x%02x' % rgb
+
 
 def create_placeholder_img():
     img = Image.new(
@@ -268,7 +272,8 @@ class ArmyPainter(tk.Tk):
         """Refresh window size using current images width"""
         img_dif_size = self.img_workspace.size
         img_tem_size = self.img_og_tem.size
-        new_width = img_dif_size[0] + img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
+        new_width = img_dif_size[0] + \
+            img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
 
         # Assuming both image got same size
         new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
@@ -287,12 +292,16 @@ class ArmyPainter(tk.Tk):
             self.select_channel()
         # TODO: Refactor following code so with frame color class
         elif type(Event.widget.master) is FramePatternList:
+        # TODO: This function is triggered upon listbox selection set.
+        # Is this intended? This cause issue with the reset_workspace function
+        # triggering the event when the pattern listbox has no selection
+            if len(self.frame_army_pattern.lb.curselection()) == 0:
+                return
             idx = self.frame_army_pattern.lb.curselection()[0]
             army_name = self.frame_army_pattern.lb.get(idx)
-            color_list = army_color_preset.get(army_name)
-            self.frame_color_chooser.color_boxes
+            color_list = list(army_color_pattern.get(army_name).values())
             for color, color_box in zip(color_list, self.frame_color_chooser.color_boxes):
-                color_box["bg"] = rgb_to_hex(color)
+                color_box["bg"] = color
             self.frame_color_chooser.draw_rgb_value()
             self.refresh_workspace()
 
@@ -363,16 +372,28 @@ class ArmyPainter(tk.Tk):
     def reset_workspace(self, Event=None):
         self.img_workspace = self.img_og_dif
         for color_box in self.frame_color_chooser.color_boxes:
-            color_box["bg"] = "gray"
+            color_box["bg"] = "#808080"
         self.frame_sliders.brightness_slider.set(40)
         self.frame_sliders.contrast_slider.set(100)
         self.frame_channel_select.lb.selection_set(first=0, last=3)
-        self.select_channel()
-        self.refresh_workspace()
+        # self.select_channel()
+        # self.refresh_workspace()
 
     def save_pattern(self):
-        raise NotImplemented
+        pattern_name = askstring("Pattern Name", "Choose a pattern name")
+        colors = [color['bg']
+                  for color in self.frame_color_chooser.color_boxes]
+        color_pattern_handler.save(name=pattern_name, colors=colors)
+        self.frame_army_pattern.load_pattern_list()
+        self.frame_army_pattern.lb.selection_set(first='end', last='end')
+        self.frame_army_pattern.lb.yview_moveto(fraction=1)
 
+    def delete_pattern(self):
+        idx = self.frame_army_pattern.lb.curselection()[0]
+        pattern_name = self.frame_army_pattern.lb.get(idx)
+        color_pattern_handler.delete(pattern_name)
+        self.frame_army_pattern.load_pattern_list()
+        self.reset_workspace()
 
 if __name__ == "__main__":
     army_painter = ArmyPainter()

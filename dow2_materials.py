@@ -1,4 +1,5 @@
-dow2_colors = {
+# Dawn of War 2 original material data
+dow2_materials = {
     "Chaos Black": {
         "team_colour": ( 10, 10, 10 ),
         "team_specular": ( 0, 0, 0 ),

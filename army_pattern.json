@@ -1,0 +1,434 @@
+{
+  "Blood Ravens": {
+    "primary_colour_name": "#641400",
+    "secondary_colour_name": "#aa9673",
+    "tint_colour_name": "#0a0a0a",
+    "extra_colour_name": "#6e6835"
+  },
+  "Dark Angels": {
+    "primary_colour_name": "#1f4b27",
+    "secondary_colour_name": "#1f4b27",
+    "tint_colour_name": "#1f4b27",
+    "extra_colour_name": "#a7a5b0"
+  },
+  "White Scars": {
+    "primary_colour_name": "#ffffff",
+    "secondary_colour_name": "#ffffff",
+    "tint_colour_name": "#ffffff",
+    "extra_colour_name": "#a81e14"
+  },
+  "Space Wolves": {
+    "primary_colour_name": "#7599a8",
+    "secondary_colour_name": "#ffbe05",
+    "tint_colour_name": "#7599a8",
+    "extra_colour_name": "#6e6835"
+  },
+  "Imperial Fists": {
+    "primary_colour_name": "#ffbe05",
+    "secondary_colour_name": "#ffbe05",
+    "tint_colour_name": "#a81e14",
+    "extra_colour_name": "#a81e14"
+  },
+  "Blood Angels": {
+    "primary_colour_name": "#a81e14",
+    "secondary_colour_name": "#a81e14",
+    "tint_colour_name": "#191919",
+    "extra_colour_name": "#323232"
+  },
+  "Iron Hands": {
+    "primary_colour_name": "#0a0a0a",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#0a0a0a",
+    "extra_colour_name": "#a7a5b0"
+  },
+  "Ultramarines": {
+    "primary_colour_name": "#1f3183",
+    "secondary_colour_name": "#1f3183",
+    "tint_colour_name": "#6e6835",
+    "extra_colour_name": "#6e6835"
+  },
+  "Salamanders": {
+    "primary_colour_name": "#146f25",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#146f25",
+    "extra_colour_name": "#6e6835"
+  },
+  "Raven Guard": {
+    "primary_colour_name": "#0a0a0a",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#a81e14",
+    "extra_colour_name": "#a7a5b0"
+  },
+  "Black Templars": {
+    "primary_colour_name": "#0a0a0a",
+    "secondary_colour_name": "#ffffff",
+    "tint_colour_name": "#0a0a0a",
+    "extra_colour_name": "#a7a5b0"
+  },
+  "Angels Sanguine": {
+    "primary_colour_name": "#a81e14",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#a81e14",
+    "extra_colour_name": "#6e6835"
+  },
+  "Angels of Redemption": {
+    "primary_colour_name": "#1f4b27",
+    "secondary_colour_name": "#ecd69e",
+    "tint_colour_name": "#1f4b27",
+    "extra_colour_name": "#a81e14"
+  },
+  "Marauders": {
+    "primary_colour_name": "#ffbe05",
+    "secondary_colour_name": "#ffbe05",
+    "tint_colour_name": "#ffbe05",
+    "extra_colour_name": "#323232"
+  },
+  "Brazen Claws": {
+    "primary_colour_name": "#cb001a",
+    "secondary_colour_name": "#1f3183",
+    "tint_colour_name": "#cb001a",
+    "extra_colour_name": "#6e6835"
+  },
+  "Novamarines Chapter": {
+    "primary_colour_name": "#c8c8c8",
+    "secondary_colour_name": "#081146",
+    "tint_colour_name": "#c8c8c8",
+    "extra_colour_name": "#4b4b4b"
+  },
+  "Revilers Chapter": {
+    "primary_colour_name": "#1e1e28",
+    "secondary_colour_name": "#1e1e28",
+    "tint_colour_name": "#1e1e28",
+    "extra_colour_name": "#a7a5b0"
+  },
+  "Taurans": {
+    "primary_colour_name": "#ecd69e",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#0a0a0a",
+    "extra_colour_name": "#4b4b4b"
+  },
+  "Relic": {
+    "primary_colour_name": "#191919",
+    "secondary_colour_name": "#ffbe05",
+    "tint_colour_name": "#ffbe05",
+    "extra_colour_name": "#6e6835"
+  },
+  "Deathwatch": {
+    "primary_colour_name": "#191919",
+    "secondary_colour_name": "#615f5d",
+    "tint_colour_name": "#615f5d",
+    "extra_colour_name": "#615f5d"
+  },
+  "Bad Moonz Clan": {
+    "primary_colour_name": "#ffbe05",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#ffbe05"
+  },
+  "Bad Moonz Clan Red": {
+    "primary_colour_name": "#ffbe05",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#cb001a"
+  },
+  "Death Skulls Clan": {
+    "primary_colour_name": "#09549d",
+    "secondary_colour_name": "#ffffff",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#09549d"
+  },
+  "Evil Sunz Clan": {
+    "primary_colour_name": "#a81e14",
+    "secondary_colour_name": "#ffbe05",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#bd3219"
+  },
+  "Goffs Clan": {
+    "primary_colour_name": "#191919",
+    "secondary_colour_name": "#ffffff",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#191919"
+  },
+  "Blood Axes Clan": {
+    "primary_colour_name": "#641400",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#641400"
+  },
+  "Snake Bites Clan": {
+    "primary_colour_name": "#995321",
+    "secondary_colour_name": "#aa9673",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#995321"
+  },
+  "Goldtoofs Warband": {
+    "primary_colour_name": "#393027",
+    "secondary_colour_name": "#ffbe05",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#ffffff"
+  },
+  "Bigchoppaz Warband": {
+    "primary_colour_name": "#433361",
+    "secondary_colour_name": "#ffffff",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#433361"
+  },
+  "Speed Freak Kult": {
+    "primary_colour_name": "#cb001a",
+    "secondary_colour_name": "#ff590a",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#cb001a"
+  },
+  "Git Wrenchas Ladz": {
+    "primary_colour_name": "#347934",
+    "secondary_colour_name": "#09549d",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#3d442f"
+  },
+  "Ulthwé": {
+    "primary_colour_name": "#0a0a0a",
+    "secondary_colour_name": "#ecd69e",
+    "tint_colour_name": "#0a0a0a",
+    "extra_colour_name": "#cb001a"
+  },
+  "Iyanden": {
+    "primary_colour_name": "#ffd902",
+    "secondary_colour_name": "#09549d",
+    "tint_colour_name": "#ffd902",
+    "extra_colour_name": "#cb001a"
+  },
+  "Alaitoc": {
+    "primary_colour_name": "#09549d",
+    "secondary_colour_name": "#ffd902",
+    "tint_colour_name": "#09549d",
+    "extra_colour_name": "#cb001a"
+  },
+  "Biel-Tan": {
+    "primary_colour_name": "#ffffff",
+    "secondary_colour_name": "#146f25",
+    "tint_colour_name": "#ffffff",
+    "extra_colour_name": "#cb001a"
+  },
+  "Saim-Hann": {
+    "primary_colour_name": "#cb001a",
+    "secondary_colour_name": "#ffffff",
+    "tint_colour_name": "#cb001a",
+    "extra_colour_name": "#0a0a0a"
+  },
+  "Yme-Loc": {
+    "primary_colour_name": "#7d7d7d",
+    "secondary_colour_name": "#f2320d",
+    "tint_colour_name": "#7d7d7d",
+    "extra_colour_name": "#056278"
+  },
+  "Altansar": {
+    "primary_colour_name": "#951023",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#951023",
+    "extra_colour_name": "#056278"
+  },
+  "Lugganath": {
+    "primary_colour_name": "#f2320d",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#f2320d",
+    "extra_colour_name": "#056278"
+  },
+  "Il-Kaithe": {
+    "primary_colour_name": "#146f25",
+    "secondary_colour_name": "#5a0258",
+    "tint_colour_name": "#146f25",
+    "extra_colour_name": "#cb001a"
+  },
+  "Iybraesil": {
+    "primary_colour_name": "#056278",
+    "secondary_colour_name": "#ffffff",
+    "tint_colour_name": "#056278",
+    "extra_colour_name": "#cb001a"
+  },
+  "Leviathan Black": {
+    "primary_colour_name": "#211032",
+    "secondary_colour_name": "#ac92d3",
+    "tint_colour_name": "#ecd69e",
+    "extra_colour_name": "#a81e14"
+  },
+  "Leviathan": {
+    "primary_colour_name": "#4b4b4b",
+    "secondary_colour_name": "#433361",
+    "tint_colour_name": "#bdad9d",
+    "extra_colour_name": "#6a3222"
+  },
+  "Leviathan - Gryphonne Tendril": {
+    "primary_colour_name": "#0a0a0a",
+    "secondary_colour_name": "#191919",
+    "tint_colour_name": "#bdad9d",
+    "extra_colour_name": "#a81e14"
+  },
+  "Leviathan - Tarsis Tendril": {
+    "primary_colour_name": "#2c5a7c",
+    "secondary_colour_name": "#7599a8",
+    "tint_colour_name": "#ffffff",
+    "extra_colour_name": "#ca8f47"
+  },
+  "Kraken": {
+    "primary_colour_name": "#641400",
+    "secondary_colour_name": "#cb001a",
+    "tint_colour_name": "#ecd69e",
+    "extra_colour_name": "#ff590a"
+  },
+  "Kraken - Ichar Tendril": {
+    "primary_colour_name": "#442219",
+    "secondary_colour_name": "#7f2d10",
+    "tint_colour_name": "#f2320d",
+    "extra_colour_name": "#ca8f47"
+  },
+  "Behemoth": {
+    "primary_colour_name": "#191919",
+    "secondary_colour_name": "#056278",
+    "tint_colour_name": "#cb001a",
+    "extra_colour_name": "#7599a8"
+  },
+  "Behemoth - Prandium Tendril": {
+    "primary_colour_name": "#641400",
+    "secondary_colour_name": "#cb001a",
+    "tint_colour_name": "#052c52",
+    "extra_colour_name": "#ff590a"
+  },
+  "8th Cadian": {
+    "primary_colour_name": "#3d442f",
+    "secondary_colour_name": "#917963",
+    "tint_colour_name": "#917963",
+    "extra_colour_name": "#6a3222"
+  },
+  "110th Cadian 'Shadow Corps'": {
+    "primary_colour_name": "#0a0a0a",
+    "secondary_colour_name": "#242a22",
+    "tint_colour_name": "#242a22",
+    "extra_colour_name": "#442219"
+  },
+  "39th Cadian 'Xenobane'": {
+    "primary_colour_name": "#242a22",
+    "secondary_colour_name": "#1f4b27",
+    "tint_colour_name": "#1f4b27",
+    "extra_colour_name": "#3d442f"
+  },
+  "31st Harakoni Warhawks": {
+    "primary_colour_name": "#917963",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#0a0a0a",
+    "extra_colour_name": "#aa9673"
+  },
+  "85th Cadian 'Firedrakes'": {
+    "primary_colour_name": "#a81e14",
+    "secondary_colour_name": "#5a1a12",
+    "tint_colour_name": "#5a1a12",
+    "extra_colour_name": "#4a2d1c"
+  },
+  "4th Brimlock Dragoons": {
+    "primary_colour_name": "#5a1a12",
+    "secondary_colour_name": "#917963",
+    "tint_colour_name": "#513820",
+    "extra_colour_name": "#513820"
+  },
+  "122nd Cadian": {
+    "primary_colour_name": "#7599a8",
+    "secondary_colour_name": "#afafaf",
+    "tint_colour_name": "#4b4b4b",
+    "extra_colour_name": "#7599a8"
+  },
+  "512th Cadian": {
+    "primary_colour_name": "#7d7d7d",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#0a0a0a",
+    "extra_colour_name": "#646464"
+  },
+  "51st Coronan Grenadiers": {
+    "primary_colour_name": "#aa9673",
+    "secondary_colour_name": "#513820",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#442219"
+  },
+  "450th Cadian": {
+    "primary_colour_name": "#242a22",
+    "secondary_colour_name": "#1f4b27",
+    "tint_colour_name": "#347934",
+    "extra_colour_name": "#1f4b27"
+  },
+  "180th Cadian 'Stalking Tigers'": {
+    "primary_colour_name": "#1f4b27",
+    "secondary_colour_name": "#513820",
+    "tint_colour_name": "#32281c",
+    "extra_colour_name": "#747d3a"
+  },
+  "182nd Moloch Rifles": {
+    "primary_colour_name": "#917963",
+    "secondary_colour_name": "#442219",
+    "tint_colour_name": "#917963",
+    "extra_colour_name": "#442219"
+  },
+  "Silver Skulls": {
+    "primary_colour_name": "#242a22",
+    "secondary_colour_name": "#aa9673",
+    "tint_colour_name": "#747d3a",
+    "extra_colour_name": "#a7a5b0"
+  },
+  "House Vandis": {
+    "primary_colour_name": "#052c52",
+    "secondary_colour_name": "#052c52",
+    "tint_colour_name": "#6a2020",
+    "extra_colour_name": "#a7a5b0"
+  },
+  "Black Legion": {
+    "primary_colour_name": "#191919",
+    "secondary_colour_name": "#c89147",
+    "tint_colour_name": "#6a2020",
+    "extra_colour_name": "#667749"
+  },
+  "Alpha Legion": {
+    "primary_colour_name": "#121a34",
+    "secondary_colour_name": "#66666f",
+    "tint_colour_name": "#6a2020",
+    "extra_colour_name": "#146f25"
+  },
+  "Death Guard": {
+    "primary_colour_name": "#6b5b20",
+    "secondary_colour_name": "#cc741e",
+    "tint_colour_name": "#995321",
+    "extra_colour_name": "#6b5b20"
+  },
+  "Emperor's Children": {
+    "primary_colour_name": "#191919",
+    "secondary_colour_name": "#de8170",
+    "tint_colour_name": "#460f0f",
+    "extra_colour_name": "#747d3a"
+  },
+  "Iron Warriors": {
+    "primary_colour_name": "#1e1e28",
+    "secondary_colour_name": "#c89147",
+    "tint_colour_name": "#ffd902",
+    "extra_colour_name": "#0a0a0a"
+  },
+  "Night Lords": {
+    "primary_colour_name": "#052c52",
+    "secondary_colour_name": "#6e6835",
+    "tint_colour_name": "#a81e14",
+    "extra_colour_name": "#7d7d7d"
+  },
+  "Word Bearers": {
+    "primary_colour_name": "#6a2020",
+    "secondary_colour_name": "#615f5d",
+    "tint_colour_name": "#a81e14",
+    "extra_colour_name": "#1f4b27"
+  },
+  "World Eaters": {
+    "primary_colour_name": "#cb001a",
+    "secondary_colour_name": "#c89147",
+    "tint_colour_name": "#442219",
+    "extra_colour_name": "#146f25"
+  },
+  "Red Corsairs": {
+    "primary_colour_name": "#f2320d",
+    "secondary_colour_name": "#0a0a0a",
+    "tint_colour_name": "#0a0a0a",
+    "extra_colour_name": "#f2320d"
+  }
+}
