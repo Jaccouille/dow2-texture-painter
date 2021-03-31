@@ -1,13 +1,7 @@
 import os
 import tkinter as tk
 from PIL import (
-    Image,
-    ImageChops,
-    ImageOps,
     ImageTk,
-    ImageColor,
-    ImageEnhance,
-    ImageDraw,
 )
 from tkinter import filedialog
 from tkinter.simpledialog import askstring
@@ -27,6 +21,7 @@ from constant import (
 )
 import color_pattern_handler
 from color_pattern_handler import army_color_pattern
+from image_process import ImageWorkbench
 
 VIEW_IMG_TOOL = 0
 VIEW_BATCH_EDIT_TOOL = 1
@@ -37,16 +32,6 @@ path = os.path.dirname(__file__)
 
 def rgb_to_hex(rgb):
     return '#' + '%02x%02x%02x' % rgb
-
-
-def create_placeholder_img():
-    img = Image.new(
-        mode="RGBA", size=(DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE), color="gray"
-    )
-    d1 = ImageDraw.Draw(img)
-    d1.text(xy=(180, 256), fill="black", text="Image PlaceHolder")
-    return img
-
 
 class ArmyPainter(tk.Tk):
     def __init__(self):
@@ -60,8 +45,7 @@ class ArmyPainter(tk.Tk):
         self.minsize(min_width, min_height)
         self.title("Army Painter")
 
-        # RGBA channel of tem texture file
-        self.tem_channels = []
+        self.img_wbench = ImageWorkbench()
 
         # Frame containing tools to edit the image
         self.frame_img_tools = tk.Frame(
@@ -97,9 +81,6 @@ class ArmyPainter(tk.Tk):
             relief=tk.RIDGE,
         )
         self.frame_batch_tools.pack_forget()
-
-        # Defining slave widget
-        # self.define_frame_batch_tool()
 
         # Defining menubar
         self.define_menu()
@@ -190,8 +171,7 @@ class ArmyPainter(tk.Tk):
 
     def define_frame_img(self):
         # TODO: refactor img variable
-        self.img_og_dif = create_placeholder_img()
-        self.img_dif = ImageTk.PhotoImage(self.img_og_dif)
+        self.img_dif = ImageTk.PhotoImage(self.img_wbench.img_og_dif)
 
         # Label SETTING DIF
         self.label_img_dif = tk.Label(
@@ -199,9 +179,7 @@ class ArmyPainter(tk.Tk):
         )
         self.label_img_dif.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.img_og_tem = create_placeholder_img()
-        self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
-
+        self.img_tem = ImageTk.PhotoImage(self.img_wbench.img_og_tem)
         # LABEL SETTING TEM
         self.label_img_tem = tk.Label(
             self.frame_img, image=self.img_tem, relief=tk.RAISED
@@ -217,9 +195,11 @@ class ArmyPainter(tk.Tk):
             self.frame_batch_tools.pack(side=tk.TOP, fill=tk.BOTH)
 
     def set_brightness(self, value: float):
+        self.img_wbench.brightness = self.frame_sliders.brightness_slider.get()
         self.refresh_workspace()
 
     def set_contrast(self, value: float):
+        self.img_wbench.contrast = self.frame_sliders.contrast_slider.get()
         self.refresh_workspace()
 
     def save(self, Event=None):
@@ -231,47 +211,23 @@ class ArmyPainter(tk.Tk):
         filename = filedialog.asksaveasfilename(
             initialdir=os.curdir, filetypes=SAVE_FILETYPES
         )
-        self.img_workspace.save(filename)
-
-    def process_img(self, channel: Image, color: tuple):
-        """Process image with current workspace setting
-
-        :param channel: channel data selected from the tem file, used as a
-        layer to colorize the image
-        :type channel: Image
-        :param color: RGBA Color used to colorize the image
-        :type color: tuple
-        :return: Processed Image
-        :rtype: Image
-        """
-        img = ImageOps.colorize(channel, (0, 0, 0), color).convert("RGBA")
-        enhancer_contrast = ImageEnhance.Contrast(img)
-        img = enhancer_contrast.enhance(
-            self.frame_sliders.contrast_slider.get() / 100)
-        enhancer_brightness = ImageEnhance.Brightness(img)
-        img = enhancer_brightness.enhance(
-            self.frame_sliders.brightness_slider.get() / 100
-        )
-        return img
+        self.img_wbench.save(filename)
 
     def refresh_workspace(self):
         """Refresh the workspace image with current settings"""
-        self.img_workspace = self.img_og_dif.copy()
-        for idx, channel in enumerate(self.tem_channels):
-            color = ImageColor.getrgb(
-                self.frame_color_chooser.color_boxes[idx]["bg"])
-            if color != (128, 128, 128):
-                channel.convert("L")
-                processed_img = self.process_img(channel, color)
-                self.img_workspace = ImageChops.add(
-                    self.img_workspace, processed_img)
-        self.img_dif = ImageTk.PhotoImage(self.img_workspace)
+        self.img_wbench.colors = [color["bg"] for color in self.frame_color_chooser.color_boxes]
+        self.img_dif = ImageTk.PhotoImage(self.img_wbench.refresh_workspace())
         self.label_img_dif.config(image=self.img_dif)
+
+    def apply_alpha(self):
+        """Takes selected channel layer and apply alpha on the workspace
+        image"""
+        self.img_wbench.apply_alpha(self.frame_channel_select.lb.curselection())
 
     def refresh_window_size(self):
         """Refresh window size using current images width"""
-        img_dif_size = self.img_workspace.size
-        img_tem_size = self.img_og_tem.size
+        img_dif_size = self.img_wbench.img_workspace.size
+        img_tem_size = self.img_wbench.img_og_tem.size
         new_width = img_dif_size[0] + \
             img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
 
@@ -279,13 +235,6 @@ class ArmyPainter(tk.Tk):
         new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
         self.geometry(f"{new_width}x{new_height}")
         self.update()
-
-    def apply_alpha(self):
-        """Takes selected channel layer and apply alpha on the workspace
-        image"""
-        for i in self.frame_channel_select.lb.curselection():
-            alpha_mask = ImageChops.invert(self.tem_channels[i])
-            self.img_workspace.putalpha(alpha_mask)
 
     def on_listbox_select(self, Event=None):
         if type(Event.widget.master) is FrameChannelList:
@@ -311,14 +260,9 @@ class ArmyPainter(tk.Tk):
         :param Event: event triggered from widget, defaults to None
         :type Event: [type], optional
         """
-        new_img = Image.new("L", self.img_og_tem.size)
-        for i in self.frame_channel_select.lb.curselection():
-            # TODO: think about clean implementation
-            try:
-                new_img = ImageChops.add(new_img, self.tem_channels[i])
-            except IndexError:
-                return
-        self.img = ImageTk.PhotoImage(new_img)
+        self.img = ImageTk.PhotoImage(
+            self.img_wbench.refresh_team_colour_img(
+                self.frame_channel_select.lb.curselection()))
         self.label_img_tem.config(image=self.img)
 
     def load_file(self, filepath: str):
@@ -328,11 +272,7 @@ class ArmyPainter(tk.Tk):
         :param filepath: path to file
         :type filepath: str
         """
-        # IMG LOADER
-        # Diffuse image
-        self.img_og_dif = Image.open(filepath)
-        background = Image.new("RGBA", self.img_og_dif.size, (0, 0, 0))
-        self.img_og_dif = Image.alpha_composite(background, self.img_og_dif)
+        self.img_wbench.load_diffuse_file(filepath)
 
         # Load associated tem file
         tem_filepath = filepath.replace("_dif.", "_tem.")
@@ -340,11 +280,9 @@ class ArmyPainter(tk.Tk):
         self.refresh_workspace()
         self.refresh_window_size()
 
-    def load_channel_packed_file(self, filename: str):
-        # tem image
-        self.img_og_tem = Image.open(filename)
-        self.img_tem = ImageTk.PhotoImage(self.img_og_tem)
-        self.tem_channels = self.img_og_tem.split()
+    def load_channel_packed_file(self, filepath: str):
+        self.img_wbench.load_team_colour_file(filepath)
+        self.img_tem = ImageTk.PhotoImage(self.img_wbench.img_og_tem)
         self.select_channel()
 
     def open_diffuse(self, Event=None):
@@ -367,17 +305,17 @@ class ArmyPainter(tk.Tk):
             if ext[1:] in OPEN_EXT_LIST and name.endswith("_dif"):
                 self.load_file(f"{source}/{filename}")
                 new_filename = name + f".{dest_format}"
-                self.img_workspace.save(f"{dest}/{new_filename}")
+                self.img_wbench.save(f"{dest}/{new_filename}")
 
     def reset_workspace(self, Event=None):
-        self.img_workspace = self.img_og_dif
+        self.img_wbench.img_workspace = self.img_wbench.img_og_dif
         for color_box in self.frame_color_chooser.color_boxes:
             color_box["bg"] = "#808080"
         self.frame_sliders.brightness_slider.set(40)
         self.frame_sliders.contrast_slider.set(100)
         self.frame_channel_select.lb.selection_set(first=0, last=3)
-        # self.select_channel()
-        # self.refresh_workspace()
+        self.select_channel()
+        self.refresh_workspace()
 
     def save_pattern(self):
         pattern_name = askstring("Pattern Name", "Choose a pattern name")
