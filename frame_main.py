@@ -29,10 +29,6 @@ PATTERN_LIST_DEFAULT_WIDTH = 166
 
 path = os.path.dirname(__file__)
 
-
-def rgb_to_hex(rgb):
-    return '#' + '%02x%02x%02x' % rgb
-
 class ArmyPainter(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -170,17 +166,13 @@ class ArmyPainter(tk.Tk):
         self.bind("<Control-r>", self.reset_workspace)
 
     def define_frame_img(self):
-        # TODO: refactor img variable
         self.img_dif = ImageTk.PhotoImage(self.img_wbench.img_og_dif)
-
-        # Label SETTING DIF
         self.label_img_dif = tk.Label(
             self.frame_img, image=self.img_dif, relief=tk.RAISED
         )
         self.label_img_dif.pack(side=tk.LEFT, fill=tk.Y)
 
         self.img_tem = ImageTk.PhotoImage(self.img_wbench.img_og_tem)
-        # LABEL SETTING TEM
         self.label_img_tem = tk.Label(
             self.frame_img, image=self.img_tem, relief=tk.RAISED
         )
@@ -194,12 +186,10 @@ class ArmyPainter(tk.Tk):
             self.frame_img_tools.pack_forget()
             self.frame_batch_tools.pack(side=tk.TOP, fill=tk.BOTH)
 
-    def set_brightness(self, value: float):
+    def on_slider_update(self, value: float):
         self.img_wbench.brightness = self.frame_sliders.brightness_slider.get()
-        self.refresh_workspace()
-
-    def set_contrast(self, value: float):
         self.img_wbench.contrast = self.frame_sliders.contrast_slider.get()
+        self.img_wbench.offset = self.frame_sliders.offset_slider.get()
         self.refresh_workspace()
 
     def save(self, Event=None):
@@ -274,9 +264,13 @@ class ArmyPainter(tk.Tk):
         """
         self.img_wbench.load_diffuse_file(filepath)
 
+
         # Load associated tem file
         tem_filepath = filepath.replace("_dif.", "_tem.")
-        self.load_channel_packed_file(tem_filepath)
+        if os.path.isfile(tem_filepath):
+            self.load_channel_packed_file(tem_filepath)
+        else:
+            self.open_channel()
         self.refresh_workspace()
         self.refresh_window_size()
 
@@ -313,6 +307,7 @@ class ArmyPainter(tk.Tk):
             color_box["bg"] = "#808080"
         self.frame_sliders.brightness_slider.set(40)
         self.frame_sliders.contrast_slider.set(100)
+        self.frame_sliders.offset_slider.set(0)
         self.frame_channel_select.lb.selection_set(first=0, last=3)
         self.select_channel()
         self.refresh_workspace()
