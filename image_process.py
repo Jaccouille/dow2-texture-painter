@@ -119,11 +119,7 @@ class ImageWorkbench():
         :param filepath: path to file
         :type filepath: str
         """
-        # IMG LOADER
-        # Diffuse image
         self.img_og_dif = Image.open(filepath)
-        # background = Image.new("RGBA", self.img_og_dif.size, (0, 0, 0))
-        # self.img_og_dif = Image.alpha_composite(background, self.img_og_dif)
 
     def load_team_colour_file(self, filepath: str):
         self.img_og_tem = Image.open(filepath)

@@ -5,6 +5,8 @@ from PIL import (
 )
 from tkinter import filedialog
 from tkinter.simpledialog import askstring
+from tkinter.messagebox import showerror
+import traceback
 from frame_color_box import FrameColorChooser
 from frame_channel_list import FrameChannelList
 from frame_slider import FrameSlider
@@ -264,7 +266,6 @@ class ArmyPainter(tk.Tk):
         """
         self.img_wbench.load_diffuse_file(filepath)
 
-
         # Load associated tem file
         tem_filepath = filepath.replace("_dif.", "_tem.")
         if os.path.isfile(tem_filepath):
@@ -280,15 +281,16 @@ class ArmyPainter(tk.Tk):
         self.select_channel()
 
     def open_diffuse(self, Event=None):
-        f = filedialog.askopenfile(
-            initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        if f is None:
+            return
         self.load_file(f.name)
 
     def open_channel(self, Event=None):
-        with filedialog.askopenfile(
-            initialdir=os.curdir, filetypes=OPEN_FILETYPES
-        ) as f:
-            self.load_channel_packed_file(f.name)
+        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        if f is None:
+            return
+        self.load_file(f.name)
 
     def batch_edit(self, Event=None):
         source = self.frame_batch_tools.frame_batch_src_path.entry_value.get()
@@ -327,6 +329,9 @@ class ArmyPainter(tk.Tk):
         color_pattern_handler.delete(pattern_name)
         self.frame_army_pattern.load_pattern_list()
         self.reset_workspace()
+
+    def report_callback_exception(self, exc, val, tb):
+        showerror("Error", message=traceback.format_exc())
 
 if __name__ == "__main__":
     army_painter = ArmyPainter()
