@@ -11,10 +11,6 @@ class FrameColorChooser(tk.Frame):
         super(FrameColorChooser, self).__init__(master=master, cnf={}, **kw)
         self.color_boxes = []
         self.color_buttons = []
-
-        # Color Dialog that open upon btn click
-        self.color_dialog = colorchooser.Chooser(self)
-
         self.initialize()
 
     def initialize(self):
@@ -49,7 +45,8 @@ class FrameColorChooser(tk.Frame):
         self.draw_rgb_value()
 
     def apply_color(self, btn_idx: int, Event=None):
-        _, color = self.color_dialog.show()
+        # Color Dialog that open upon btn click
+        _, color = colorchooser.askcolor(self.color_boxes[btn_idx]["bg"])
         if color is not None:
             self.color_boxes[btn_idx]["bg"] = color
             self.draw_rgb_value()
