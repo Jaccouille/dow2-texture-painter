@@ -137,6 +137,30 @@ class ArmyPainter(tk.Tk):
                 command=self.reset_workspace,
                 accelerator="Ctrl+R",
             )
+            self.apply_dirt = tk.BooleanVar()
+            editmenu.add_checkbutton(
+                label="Apply Dirt Texture",
+                variable=self.apply_dirt,
+                onvalue=1,
+                offvalue=0,
+                command=self.on_dirt_toggle
+            )
+            self.apply_spec = tk.BooleanVar()
+            editmenu.add_checkbutton(
+                label="Apply Specular Texture",
+                variable=self.apply_spec,
+                onvalue=1,
+                offvalue=0,
+                command=self.on_spec_toggle
+            )
+            self.use_alpha_composite = tk.BooleanVar()
+            editmenu.add_checkbutton(
+                label="Use Alpha Composite",
+                variable=self.use_alpha_composite,
+                onvalue=1,
+                offvalue=0,
+                command=self.on_alpha_composite_toggle
+            )
             menubar.add_cascade(label="Edit", menu=editmenu)
 
         def define_toolmenu():
@@ -216,6 +240,18 @@ class ArmyPainter(tk.Tk):
         image"""
         self.img_wbench.apply_alpha(self.frame_channel_select.lb.curselection())
 
+    def on_dirt_toggle(self):
+        self.img_wbench.apply_dirt = self.apply_dirt.get()
+        self.refresh_workspace()
+
+    def on_spec_toggle(self):
+        self.img_wbench.apply_spec = self.apply_spec.get()
+        self.refresh_workspace()
+
+    def on_alpha_composite_toggle(self):
+        self.img_wbench.use_alpha_composite = self.use_alpha_composite.get()
+        self.refresh_workspace()
+
     def refresh_window_size(self):
         """Refresh window size using current images width"""
         img_dif_size = self.img_wbench.img_workspace.size
@@ -265,6 +301,7 @@ class ArmyPainter(tk.Tk):
         :type filepath: str
         """
         self.img_wbench.load_diffuse_file(filepath)
+        self.img_wbench
 
         # Load associated tem file
         tem_filepath = filepath.replace("_dif.", "_tem.")
@@ -272,6 +309,17 @@ class ArmyPainter(tk.Tk):
             self.load_channel_packed_file(tem_filepath)
         else:
             self.open_channel()
+
+        # Load associated dirt file
+        dirt_filepath = filepath.replace("_dif.", "_drt.")
+        if os.path.isfile(dirt_filepath):
+            self.load_dirt_file(dirt_filepath)
+
+        # Load associated spec file
+        spec_filepath = filepath.replace("_dif.", "_spc.")
+        if os.path.isfile(spec_filepath):
+            self.load_spec_file(spec_filepath)
+
         self.refresh_workspace()
         self.refresh_window_size()
 
@@ -279,6 +327,12 @@ class ArmyPainter(tk.Tk):
         self.img_wbench.load_team_colour_file(filepath)
         self.img_tem = ImageTk.PhotoImage(self.img_wbench.img_og_tem)
         self.select_channel()
+
+    def load_dirt_file(self, filepath: str):
+        self.img_wbench.load_dirt_file(filepath)
+
+    def load_spec_file(self, filepath: str):
+        self.img_wbench.load_specular_file(filepath)
 
     def open_diffuse(self, Event=None):
         f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)

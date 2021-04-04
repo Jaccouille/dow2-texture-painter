@@ -32,6 +32,9 @@ class ImageWorkbench():
         self.brightness = 40
         self.contrast = 100
         self.offset = 0
+        self.apply_dirt = False
+        self.apply_spec = False
+        self.use_alpha_composite = False
 
     def process_img(self, channel: Image, color: tuple):
         """Process image with current workspace setting
@@ -45,17 +48,14 @@ class ImageWorkbench():
         :rtype: Image
         """
         img = ImageOps.colorize(channel, (0, 0, 0), color).convert("RGBA")
-        # img = channel.convert("RGBA")
 
         # Apply transparency on black pixel
         # TODO: find efficient way to apply alpha on black pixel
-        # pixeldata = list(img.getdata())
-        # for i,pixel in enumerate(pixeldata):
-        #     if almostEquals(pixel[:3], (0,0,0)):
-        #         pixeldata[i] = (0, 0, 0, 0,)
-        #     else:
-        #         pixeldata[i] = color
-        # img.putdata(pixeldata)
+        # if self.use_alpha_composite:
+        colored = Image.new("RGBA", img.size, color)
+        mask = ImageChops.invert(channel)
+        img = Image.composite(img, colored, mask)
+        img.putalpha(channel)
 
         enhancer_contrast = ImageEnhance.Contrast(img)
         img = enhancer_contrast.enhance(
@@ -75,21 +75,27 @@ class ImageWorkbench():
             if rgb != (128, 128, 128):
                 channel.convert("L")
                 processed_img = self.process_img(channel, rgb)
-                # TODO: Improve following
-                # multiply doesn't work with white color
                 tmp = ImageChops.multiply(
                     tmp, processed_img)
 
-                # Add works with white but not with black color
-                self.img_workspace = ImageChops.add(self.img_workspace, tmp, offset=self.offset)
                 # alpha_composite works with black but not white color
-                # self.img_workspace.alpha_composite(tmp)
+                if self.use_alpha_composite:
+                    self.img_workspace.alpha_composite(tmp)
+                # TODO: Improve following
+                # multiply doesn't work with white color
+                else:
+                    # Add works with white but not with black color
+                    self.img_workspace = ImageChops.add(self.img_workspace, tmp, offset=self.offset)
 
                 # Debug
                 # processed_img.save(os.curdir + f"/proc_{i}.png")
                 # tmp.save(os.curdir + f"/tmp_{i}.png")
                 # self.img_workspace.save(os.curdir + f"/work_{i}.png")
 
+        if self.apply_dirt:
+            self.img_workspace = Image.alpha_composite(self.img_workspace, self.img_dirt)
+        if self.apply_spec:
+            self.img_workspace = Image.alpha_composite(self.img_workspace, self.img_spec)
         background = Image.new("RGBA", self.img_workspace.size, (0, 0, 0))
         self.img_workspace = Image.alpha_composite(background, self.img_workspace)
         return self.img_workspace
@@ -124,6 +130,14 @@ class ImageWorkbench():
     def load_team_colour_file(self, filepath: str):
         self.img_og_tem = Image.open(filepath)
         self.tem_channels = self.img_og_tem.split()
+
+    def load_dirt_file(self, filepath: str):
+        print(filepath)
+        self.img_dirt = Image.open(filepath)
+        self.img_dirt.save(os.curdir + "/dirt.png")
+
+    def load_specular_file(self, filepath: str):
+        self.img_spec = Image.open(filepath)
 
     def save(self, filepath: str):
         self.img_workspace.save(filepath)
