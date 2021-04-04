@@ -127,14 +127,12 @@ class ImageWorkbench():
         :type filepath: str
         """
         self.img_og_dif = Image.open(filepath)
-        print(f"Diffuse : {filepath}")
 
     def load_team_colour_file(self, filepath: str):
         self.img_og_tem = Image.open(filepath)
         self.tem_channels = self.img_og_tem.split()
 
     def load_dirt_file(self, filepath: str):
-        print(f"Dirt : {filepath}")
         self.img_dirt = Image.open(filepath)
 
     def load_specular_file(self, filepath: str):
