@@ -14,7 +14,14 @@ class FrameChannelList(tk.LabelFrame):
         self.lb.pack(side=tk.TOP, fill=tk.Y)
 
         # Add alpha BTN
-        self.add_alpha = tk.Button(
-            self, text="Apply alpha", height=2, command=self._root().apply_alpha
+        self.apply_alpha = tk.BooleanVar()
+        self.add_alpha = tk.Checkbutton(
+            self,
+            text="Apply alpha",
+            variable=self.apply_alpha,
+            onvalue=1,
+            offvalue=0,
+            height=2,
+            command=self._root().on_apply_alpha_toggle
         )
         self.add_alpha.pack(side=tk.TOP, fill=tk.X)

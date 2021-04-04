@@ -45,6 +45,7 @@ class ArmyPainter(tk.Tk):
         self.title("Army Painter")
 
         self.img_wbench = ImageWorkbench()
+        self.is_load_batch = False
 
         # Frame containing tools to edit the image
         self.frame_img_tools = tk.Frame(
@@ -236,10 +237,9 @@ class ArmyPainter(tk.Tk):
         self.img_dif = ImageTk.PhotoImage(self.img_wbench.refresh_workspace())
         self.label_img_dif.config(image=self.img_dif)
 
-    def apply_alpha(self):
-        """Takes selected channel layer and apply alpha on the workspace
-        image"""
-        self.img_wbench.apply_alpha(self.frame_channel_select.lb.curselection())
+    def on_apply_alpha_toggle(self):
+        self.img_wbench.apply_alpha = self.frame_channel_select.apply_alpha.get()
+        self.refresh_workspace()
 
     def on_dirt_toggle(self):
         self.img_wbench.apply_dirt = self.apply_dirt.get()
@@ -289,9 +289,12 @@ class ArmyPainter(tk.Tk):
         :param Event: event triggered from widget, defaults to None
         :type Event: [type], optional
         """
-        self.img = ImageTk.PhotoImage(
-            self.img_wbench.refresh_team_colour_img(
-                self.frame_channel_select.lb.curselection()))
+        self.img_wbench.tem_selected = self.frame_channel_select.lb.curselection()
+        # TODO: refactor lazy check with is load batch
+        # Did to avoid exception in ImageWorkbench processing
+        if self.img_wbench.apply_alpha and not self.is_load_batch:
+            self.refresh_workspace()
+        self.img = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
         self.label_img_tem.config(image=self.img)
 
     def load_file(self, filepath: str):
@@ -348,6 +351,7 @@ class ArmyPainter(tk.Tk):
         self.load_file(f.name)
 
     def batch_edit(self, Event=None):
+        self.is_load_batch = True
         source = self.frame_batch_tools.frame_batch_src_path.entry_value.get()
         dest = self.frame_batch_tools.frame_batch_dest_path.entry_value.get()
         dest_format = self.frame_batch_tools.dest_format.get().lower()
@@ -357,6 +361,7 @@ class ArmyPainter(tk.Tk):
                 self.load_file(f"{source}/{filename}")
                 new_filename = name + f".{dest_format}"
                 self.img_wbench.save(f"{dest}/{new_filename}")
+        self.is_load_batch = False
 
     def reset_workspace(self, Event=None):
         self.img_wbench.img_workspace = self.img_wbench.img_og_dif
