@@ -40,6 +40,7 @@ class ArmyPainter(tk.Tk):
         min_height = DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT
         dimension = f"{min_width}x{min_height}"
         self.geometry(dimension)
+        self.iconphoto(False, tk.PhotoImage(file=os.curdir + "/assets/icon_64x64.png"))
         self.minsize(min_width, min_height)
         self.title("Army Painter")
 
