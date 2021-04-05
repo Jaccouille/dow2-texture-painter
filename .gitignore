@@ -1,7 +1,11 @@
-/assets
 /venv
+
 
 /.vscode
 *.tga
 *.pyc
 *.png
+*.dds
+*.blp
+*.mdx
+!assets/icon_64x64.png
