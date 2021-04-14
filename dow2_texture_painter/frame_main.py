@@ -7,12 +7,14 @@ from tkinter import filedialog
 from tkinter.simpledialog import askstring
 from tkinter.messagebox import showerror
 import traceback
-from frame_color_box import FrameColorChooser
-from frame_channel_list import FrameChannelList
-from frame_slider import FrameSlider
-from frame_batch_tool import FrameBatchTool
-from frame_pattern_list import FramePatternList
-from constant import (
+from dow2_texture_painter.widget import (
+    FrameColorChooser,
+    FrameChannelList,
+    FrameSlider,
+    FrameBatchTool,
+    FramePatternList,
+)
+from dow2_texture_painter.constant import (
     DEFAULT_IMG_SIZE,
     COLOR_BOX_SIZE,
     COLOR_BTN_HEIGHT,
@@ -21,15 +23,16 @@ from constant import (
     OPEN_FILETYPES,
     OPEN_EXT_LIST,
 )
-import color_pattern_handler
-from color_pattern_handler import army_color_pattern
-from image_process import ImageWorkbench
+import dow2_texture_painter.color_pattern_handler
+from dow2_texture_painter.color_pattern_handler import army_color_pattern
+from dow2_texture_painter.image_process import ImageWorkbench
 
 VIEW_IMG_TOOL = 0
 VIEW_BATCH_EDIT_TOOL = 1
 PATTERN_LIST_DEFAULT_WIDTH = 166
 
 path = os.path.dirname(__file__)
+
 
 class ArmyPainter(tk.Tk):
     def __init__(self):
@@ -40,7 +43,8 @@ class ArmyPainter(tk.Tk):
         min_height = DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT
         dimension = f"{min_width}x{min_height}"
         self.geometry(dimension)
-        self.iconphoto(False, tk.PhotoImage(file=os.curdir + "/assets/icon_64x64.png"))
+        self.iconphoto(False, tk.PhotoImage(
+            file=os.curdir + "/assets/icon_64x64.png"))
         self.minsize(min_width, min_height)
         self.title("Army Painter")
 
@@ -233,7 +237,8 @@ class ArmyPainter(tk.Tk):
 
     def refresh_workspace(self):
         """Refresh the workspace image with current settings"""
-        self.img_wbench.colors = [color["bg"] for color in self.frame_color_chooser.color_boxes]
+        self.img_wbench.colors = [color["bg"]
+                                  for color in self.frame_color_chooser.color_boxes]
         self.img_dif = ImageTk.PhotoImage(self.img_wbench.refresh_workspace())
         self.label_img_dif.config(image=self.img_dif)
 
@@ -270,9 +275,9 @@ class ArmyPainter(tk.Tk):
             self.select_channel()
         # TODO: Refactor following code so with frame color class
         elif type(Event.widget.master) is FramePatternList:
-        # TODO: This function is triggered upon listbox selection set.
-        # Is this intended? This cause issue with the reset_workspace function
-        # triggering the event when the pattern listbox has no selection
+            # TODO: This function is triggered upon listbox selection set.
+            # Is this intended? This cause issue with the reset_workspace function
+            # triggering the event when the pattern listbox has no selection
             if len(self.frame_army_pattern.lb.curselection()) == 0:
                 return
             idx = self.frame_army_pattern.lb.curselection()[0]
@@ -294,7 +299,8 @@ class ArmyPainter(tk.Tk):
         # Did to avoid exception in ImageWorkbench processing
         if self.img_wbench.apply_alpha and not self.is_load_batch:
             self.refresh_workspace()
-        self.img = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
+        self.img = ImageTk.PhotoImage(
+            self.img_wbench.refresh_team_colour_img())
         self.label_img_tem.config(image=self.img)
 
     def load_file(self, filepath: str):
@@ -339,13 +345,15 @@ class ArmyPainter(tk.Tk):
         self.img_wbench.load_specular_file(filepath)
 
     def open_diffuse(self, Event=None):
-        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        f = filedialog.askopenfile(
+            initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         if f is None:
             return
         self.load_file(f.name)
 
     def open_channel(self, Event=None):
-        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        f = filedialog.askopenfile(
+            initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         if f is None:
             return
         self.load_file(f.name)
@@ -378,7 +386,8 @@ class ArmyPainter(tk.Tk):
         pattern_name = askstring("Pattern Name", "Choose a pattern name")
         colors = [color['bg']
                   for color in self.frame_color_chooser.color_boxes]
-        color_pattern_handler.save(name=pattern_name, colors=colors)
+        dow2_texture_painter.color_pattern_handler.save(
+            name=pattern_name, colors=colors)
         self.frame_army_pattern.load_pattern_list()
         self.frame_army_pattern.lb.selection_set(first='end', last='end')
         self.frame_army_pattern.lb.yview_moveto(fraction=1)
@@ -386,13 +395,18 @@ class ArmyPainter(tk.Tk):
     def delete_pattern(self):
         idx = self.frame_army_pattern.lb.curselection()[0]
         pattern_name = self.frame_army_pattern.lb.get(idx)
-        color_pattern_handler.delete(pattern_name)
+        dow2_texture_painter.color_pattern_handler.delete(pattern_name)
         self.frame_army_pattern.load_pattern_list()
         self.reset_workspace()
 
     def report_callback_exception(self, exc, val, tb):
         showerror("Error", message=traceback.format_exc())
 
-if __name__ == "__main__":
+
+def main():
     army_painter = ArmyPainter()
     army_painter.mainloop()
+
+
+if __name__ == "__main__":
+    main()

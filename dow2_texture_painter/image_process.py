@@ -2,15 +2,15 @@ from PIL import (
     Image,
     ImageChops,
     ImageOps,
-    ImageTk,
     ImageColor,
     ImageEnhance,
     ImageDraw,
 )
-from constant import (
+from dow2_texture_painter.constant import (
     DEFAULT_IMG_SIZE,
 )
 import os
+
 
 def create_placeholder_img():
     img = Image.new(
@@ -20,8 +20,10 @@ def create_placeholder_img():
     d1.text(xy=(180, 256), fill="black", text="Image PlaceHolder")
     return img
 
-def almostEquals(a,b,thres=5):
-    return all(abs(a[i]-b[i])<thres for i in range(len(a)))
+
+def almostEquals(a, b, thres=5):
+    return all(abs(a[i]-b[i]) < thres for i in range(len(a)))
+
 
 class ImageWorkbench():
     def __init__(self):
@@ -87,7 +89,8 @@ class ImageWorkbench():
                 # multiply doesn't work with white color
                 else:
                     # Add works with white but not with black color
-                    self.img_workspace = ImageChops.add(self.img_workspace, tmp, offset=self.offset)
+                    self.img_workspace = ImageChops.add(
+                        self.img_workspace, tmp, offset=self.offset)
 
                 # Debug
                 # processed_img.save(os.curdir + f"/proc_{i}.png")
@@ -101,9 +104,11 @@ class ImageWorkbench():
             self.img_workspace.putalpha(tmp)
 
         if self.apply_dirt:
-            self.img_workspace = Image.alpha_composite(self.img_workspace, self.img_dirt)
+            self.img_workspace = Image.alpha_composite(
+                self.img_workspace, self.img_dirt)
         if self.apply_spec:
-            self.img_workspace = Image.alpha_composite(self.img_workspace, self.img_spec)
+            self.img_workspace = Image.alpha_composite(
+                self.img_workspace, self.img_spec)
         # background = Image.new("RGBA", self.img_workspace.size, (0, 0, 0))
         # self.img_workspace = Image.alpha_composite(background, self.img_workspace)
         return self.img_workspace
