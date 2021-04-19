@@ -1,6 +1,6 @@
 import configparser
 from collections import OrderedDict
-from dow2_texture_painter.constant import DOW2_MATERIALS
+from src.constant import DOW2_MATERIALS
 import json
 from pathlib import Path
 import sys
@@ -11,6 +11,7 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
 else:
     bundle_dir = Path(__file__).parent
 
+import ipdb; ipdb.set_trace()
 
 DEFAULT_PATTERN_PATH = bundle_dir / "data/default_pattern.ini"
 ARMY_PATTERN_PATH = bundle_dir / "data/army_pattern.json"

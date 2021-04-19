@@ -7,14 +7,14 @@ from tkinter import filedialog
 from tkinter.simpledialog import askstring
 from tkinter.messagebox import showerror
 import traceback
-from dow2_texture_painter.widget import (
+from src.widget import (
     FrameColorChooser,
     FrameChannelList,
     FrameSlider,
     FrameBatchTool,
     FramePatternList,
 )
-from dow2_texture_painter.constant import (
+from src.constant import (
     DEFAULT_IMG_SIZE,
     COLOR_BOX_SIZE,
     COLOR_BTN_HEIGHT,
@@ -23,9 +23,9 @@ from dow2_texture_painter.constant import (
     OPEN_FILETYPES,
     OPEN_EXT_LIST,
 )
-import dow2_texture_painter.color_pattern_handler
-from dow2_texture_painter.color_pattern_handler import army_color_pattern
-from dow2_texture_painter.image_process import ImageWorkbench
+import src.color_pattern_handler
+from src.color_pattern_handler import army_color_pattern
+from src.image_process import ImageWorkbench
 
 VIEW_IMG_TOOL = 0
 VIEW_BATCH_EDIT_TOOL = 1
@@ -386,7 +386,7 @@ class ArmyPainter(tk.Tk):
         pattern_name = askstring("Pattern Name", "Choose a pattern name")
         colors = [color['bg']
                   for color in self.frame_color_chooser.color_boxes]
-        dow2_texture_painter.color_pattern_handler.save(
+        src.color_pattern_handler.save(
             name=pattern_name, colors=colors)
         self.frame_army_pattern.load_pattern_list()
         self.frame_army_pattern.lb.selection_set(first='end', last='end')
@@ -395,7 +395,7 @@ class ArmyPainter(tk.Tk):
     def delete_pattern(self):
         idx = self.frame_army_pattern.lb.curselection()[0]
         pattern_name = self.frame_army_pattern.lb.get(idx)
-        dow2_texture_painter.color_pattern_handler.delete(pattern_name)
+        src.color_pattern_handler.delete(pattern_name)
         self.frame_army_pattern.load_pattern_list()
         self.reset_workspace()
 

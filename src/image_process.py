@@ -6,7 +6,7 @@ from PIL import (
     ImageEnhance,
     ImageDraw,
 )
-from dow2_texture_painter.constant import (
+from src.constant import (
     DEFAULT_IMG_SIZE,
 )
 import os

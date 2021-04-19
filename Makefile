@@ -3,7 +3,7 @@
 SHELL := /bin/zsh
 .DEFAULT_GOAL := help
 
-APP_DIR = dow2_texture_painter
+APP_DIR = src
 
 test:
 	. venv/bin/activate

@@ -2,8 +2,8 @@ import tkinter as tk
 import os
 from tkinter import colorchooser, filedialog
 from functools import partial
-from dow2_texture_painter.color_pattern_handler import army_color_pattern
-from dow2_texture_painter.constant import OPEN_FILETYPES, SAVE_EXT_LIST
+from src.color_pattern_handler import army_color_pattern
+from src.constant import OPEN_FILETYPES, SAVE_EXT_LIST
 
 COLOR_BOX_SIZE = 90
 COLOR_BTN_HEIGHT = 26
