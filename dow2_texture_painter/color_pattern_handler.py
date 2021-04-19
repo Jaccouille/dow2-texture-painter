@@ -3,9 +3,17 @@ from collections import OrderedDict
 from dow2_texture_painter.constant import DOW2_MATERIALS
 import json
 from pathlib import Path
+import sys
 
-DEFAULT_PATTERN_PATH = Path(__file__).parent / "data/default_pattern.ini"
-ARMY_PATTERN_PATH = Path(__file__).parent / "data/army_pattern.json"
+
+if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+    bundle_dir = Path(sys._MEIPASS)
+else:
+    bundle_dir = Path(__file__).parent
+
+
+DEFAULT_PATTERN_PATH = bundle_dir / "data/default_pattern.ini"
+ARMY_PATTERN_PATH = bundle_dir / "data/army_pattern.json"
 
 config = configparser.ConfigParser()
 config.read(DEFAULT_PATTERN_PATH)
@@ -40,21 +48,18 @@ def get_pattern_dict():
 def dump_default_pattern():
     default_pattern_dict = get_pattern_dict()
     for k, v in default_pattern_dict.items():
-        pattern_dict = {}
-        for _, (key, value) in enumerate(zip(color_key, v)):
-            pattern_dict[key] = rgb_to_hex(value)
-        default_pattern_dict[k] = pattern_dict
+        default_pattern_dict[k] = {key: rgb_to_hex(
+            value) for (key, value) in zip(color_key, v)}
 
     with open(ARMY_PATTERN_PATH, 'w') as fp:
         json.dump(default_pattern_dict, fp, indent=2, ensure_ascii=False)
 
 
 def save(name: str, colors: list):
+    # TODO: allow pattern overwrite
     if army_color_pattern.get(str) is not None:
         raise ValueError
-    pattern_dict = {}
-    for _, (key, value) in enumerate(zip(color_key, colors)):
-        pattern_dict[key] = value
+    pattern_dict = {k: v for (k, v) in zip(color_key, colors)}
     army_color_pattern[name] = pattern_dict
     with open(ARMY_PATTERN_PATH, 'w') as fp:
         json.dump(army_color_pattern, fp, indent=2, ensure_ascii=False)

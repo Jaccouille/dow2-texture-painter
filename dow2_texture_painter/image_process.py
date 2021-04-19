@@ -109,6 +109,7 @@ class ImageWorkbench():
         if self.apply_spec:
             self.img_workspace = Image.alpha_composite(
                 self.img_workspace, self.img_spec)
+        # Can be used to hide alpha pixels
         # background = Image.new("RGBA", self.img_workspace.size, (0, 0, 0))
         # self.img_workspace = Image.alpha_composite(background, self.img_workspace)
         return self.img_workspace
