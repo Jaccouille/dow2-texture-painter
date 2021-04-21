@@ -100,7 +100,6 @@ class ImageWorkbench():
         if self.apply_alpha:
             tmp = self.refresh_team_colour_img()
             tmp = ImageChops.invert(tmp)
-            tmp.save(os.curdir + "/alpha.png")
             self.img_workspace.putalpha(tmp)
 
         if self.apply_dirt:

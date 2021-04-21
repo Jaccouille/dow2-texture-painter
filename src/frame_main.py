@@ -1,8 +1,8 @@
 import os
-import tkinter as tk
 from PIL import (
     ImageTk,
 )
+import tkinter as tk
 from tkinter import filedialog
 from tkinter.simpledialog import askstring
 from tkinter.messagebox import showerror

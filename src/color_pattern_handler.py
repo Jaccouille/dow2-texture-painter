@@ -11,7 +11,6 @@ if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
 else:
     bundle_dir = Path(__file__).parent
 
-import ipdb; ipdb.set_trace()
 
 DEFAULT_PATTERN_PATH = bundle_dir / "data/default_pattern.ini"
 ARMY_PATTERN_PATH = bundle_dir / "data/army_pattern.json"

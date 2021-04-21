@@ -17,11 +17,14 @@ venv:
 run-dev: ## launch main frame entry point
 	texture-painter
 
-build-bin-folder: ## build binary folder for linux
-	pyinstaller --noconfirm --add-data "$(APP_DIR)/data:data" --hidden-import='PIL._tkinter_finder' dow2_texture_painter/frame_main.py
+build-bin-folder: ## build binary folder
+	pyinstaller --windowed --noconfirm --add-data "$(APP_DIR)/data:data" --hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py
 
-build-bin-file: ## build binary file for linux
-	pyinstaller --onefile --windowed --noconfirm --add-data "$(APP_DIR)/data:data" --hidden-import='PIL._tkinter_finder' dow2_texture_painter/frame_main.py
+build-bin-file: ## build binary
+	pyinstaller --onefile --windowed --noconfirm --add-data "$(APP_DIR)/data:data" --hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py
+
+# build-spec:
+# 	docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux "pyinstaller --onefile --windowed --noconfirm --add-data '$(APP_DIR)/data:data' --hidden-import='PIL._tkinter_finder' src/frame_main.py"
 
 clean: clean-build clean-pyc ## remove all build, test, coverage and Python artifacts
 
@@ -33,7 +36,7 @@ clean-build: ## remove build artifacts
 	rm -fr dist/
 	rm -fr .eggs/
 	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '*.egg' -exec rm -f {} +
+	find . -name '*.egg' -exec rm -fr {} +
 
 clean-pyc: ## remove Python file artifacts
 	find . -name '*.pyc' -exec rm -f {} +
