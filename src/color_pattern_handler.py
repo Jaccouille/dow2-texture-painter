@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 
 
-if getattr(sys, 'frozen', False) and hasattr(sys, '_MEIPASS'):
+if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
     bundle_dir = Path(sys._MEIPASS)
 else:
     bundle_dir = Path(__file__).parent
@@ -28,7 +28,7 @@ army_color_pattern = {}
 
 
 def rgb_to_hex(rgb):
-    return '#' + '%02x%02x%02x' % rgb
+    return "#" + "%02x%02x%02x" % rgb
 
 
 def get_pattern_dict():
@@ -39,8 +39,9 @@ def get_pattern_dict():
             continue
         for key in color_key:
             color_name = pattern.get(key)
-            team_color.append(DOW2_MATERIALS.get(
-                color_name).get("team_colour"))
+            team_color.append(
+                DOW2_MATERIALS.get(color_name).get("team_colour")
+            )
         default_pattern_dict[army_name] = team_color
     return default_pattern_dict
 
@@ -48,10 +49,11 @@ def get_pattern_dict():
 def dump_default_pattern():
     default_pattern_dict = get_pattern_dict()
     for k, v in default_pattern_dict.items():
-        default_pattern_dict[k] = {key: rgb_to_hex(
-            value) for (key, value) in zip(color_key, v)}
+        default_pattern_dict[k] = {
+            key: rgb_to_hex(value) for (key, value) in zip(color_key, v)
+        }
 
-    with open(ARMY_PATTERN_PATH, 'w') as fp:
+    with open(ARMY_PATTERN_PATH, "w") as fp:
         json.dump(default_pattern_dict, fp, indent=2, ensure_ascii=False)
 
 
@@ -61,13 +63,13 @@ def save(name: str, colors: list):
         raise ValueError
     pattern_dict = {k: v for (k, v) in zip(color_key, colors)}
     army_color_pattern[name] = pattern_dict
-    with open(ARMY_PATTERN_PATH, 'w') as fp:
+    with open(ARMY_PATTERN_PATH, "w") as fp:
         json.dump(army_color_pattern, fp, indent=2, ensure_ascii=False)
 
 
 def delete(name: str):
     army_color_pattern.pop(name)
-    with open(ARMY_PATTERN_PATH, 'w') as fp:
+    with open(ARMY_PATTERN_PATH, "w") as fp:
         json.dump(army_color_pattern, fp, indent=2, ensure_ascii=False)
 
 
@@ -75,5 +77,5 @@ def delete(name: str):
 if not ARMY_PATTERN_PATH.is_file():
     dump_default_pattern()
 
-with open(ARMY_PATTERN_PATH, 'r') as fp:
+with open(ARMY_PATTERN_PATH, "r") as fp:
     army_color_pattern = json.load(fp, object_pairs_hook=OrderedDict)

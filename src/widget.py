@@ -30,7 +30,7 @@ class FrameChannelList(tk.LabelFrame):
             onvalue=1,
             offvalue=0,
             height=2,
-            command=self._root().on_apply_alpha_toggle
+            command=self._root().on_apply_alpha_toggle,
         )
         self.add_alpha.pack(side=tk.TOP, fill=tk.X)
 
@@ -55,7 +55,8 @@ class FrameColorChooser(tk.Frame):
                 )
             )
             self.color_boxes[i].bind(
-                "<Button-1>", partial(self.apply_color, i))
+                "<Button-1>", partial(self.apply_color, i)
+            )
             self.color_boxes[i].place(
                 anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=COLOR_BTN_HEIGHT
             )
@@ -70,7 +71,8 @@ class FrameColorChooser(tk.Frame):
                 )
             )
             self.color_buttons[i].place(
-                anchor=tk.NW, x=COLOR_BOX_SIZE * i + i * 1, y=0)
+                anchor=tk.NW, x=COLOR_BOX_SIZE * i + i * 1, y=0
+            )
         self.draw_rgb_value()
 
     def apply_color(self, btn_idx: int, Event=None):
@@ -139,8 +141,9 @@ class FramePatternList(tk.Frame):
         super(FramePatternList, self).__init__(master=master, cnf={}, **kw)
         self.scrollbar = tk.Scrollbar(self)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.lb = tk.Listbox(self, selectmode=tk.SINGLE,
-                             yscrollcommand=self.scrollbar.set)
+        self.lb = tk.Listbox(
+            self, selectmode=tk.SINGLE, yscrollcommand=self.scrollbar.set
+        )
         self.scrollbar.config(command=self.lb.yview)
 
         self.load_pattern_list()
@@ -155,7 +158,7 @@ class FramePatternList(tk.Frame):
         self.delete_pattern.pack(side=tk.TOP, fill=tk.X)
 
     def load_pattern_list(self):
-        self.lb.delete(0, 'end')
+        self.lb.delete(0, "end")
         for idx, pattern_name in enumerate(army_color_pattern):
             self.lb.insert(idx, pattern_name)
         self.lb.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
@@ -186,11 +189,9 @@ class FrameBatchTool(tk.Frame):
         # Destination Format Option Menu
         self.frame_destination_format = tk.Frame(self)
         self.frame_destination_format.pack(side=tk.TOP, fill=tk.X)
-        tk.Label(self.frame_destination_format,
-                 text="Destination format:").pack(
-
-            side=tk.LEFT
-        )
+        tk.Label(
+            self.frame_destination_format, text="Destination format:"
+        ).pack(side=tk.LEFT)
         self.dest_format = tk.StringVar(self)
         self.dest_format.set(SAVE_EXT_LIST[0].upper())
         self.dest_menu = tk.OptionMenu(
@@ -218,12 +219,8 @@ class FrameBatchTool(tk.Frame):
             entry_frame = tk.Frame(frame)
             entry_frame.pack(side=tk.TOP, fill=tk.X)
             tk.Label(
-                entry_frame,
-                text=label,
-                width=label_width,
-                anchor=tk.W).pack(
-                side=tk.LEFT
-            )
+                entry_frame, text=label, width=label_width, anchor=tk.W
+            ).pack(side=tk.LEFT)
             entry_frame.entry_value = tk.StringVar(value=starting_value)
             entry_path = tk.Entry(
                 entry_frame,
@@ -240,6 +237,8 @@ class FrameBatchTool(tk.Frame):
             return entry_frame
 
         self.frame_batch_src_path = widget_entry_template(
-            self, "Source folder:")
+            self, "Source folder:"
+        )
         self.frame_batch_dest_path = widget_entry_template(
-            self, "Destination folder:")
+            self, "Destination folder:"
+        )

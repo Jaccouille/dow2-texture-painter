@@ -9,7 +9,6 @@ from PIL import (
 from src.constant import (
     DEFAULT_IMG_SIZE,
 )
-import os
 
 
 def create_placeholder_img():
@@ -22,10 +21,10 @@ def create_placeholder_img():
 
 
 def almostEquals(a, b, thres=5):
-    return all(abs(a[i]-b[i]) < thres for i in range(len(a)))
+    return all(abs(a[i] - b[i]) < thres for i in range(len(a)))
 
 
-class ImageWorkbench():
+class ImageWorkbench:
     def __init__(self):
         self.tem_channels = []
         self.tem_selected = []
@@ -62,12 +61,9 @@ class ImageWorkbench():
         img.putalpha(channel)
 
         enhancer_contrast = ImageEnhance.Contrast(img)
-        img = enhancer_contrast.enhance(
-            self.brightness / 100)
+        img = enhancer_contrast.enhance(self.brightness / 100)
         enhancer_brightness = ImageEnhance.Brightness(img)
-        img = enhancer_brightness.enhance(
-            self.contrast / 100
-        )
+        img = enhancer_brightness.enhance(self.contrast / 100)
         return img
 
     def refresh_workspace(self):
@@ -79,8 +75,7 @@ class ImageWorkbench():
             if rgb != (128, 128, 128):
                 channel.convert("L")
                 processed_img = self.process_img(channel, rgb)
-                tmp = ImageChops.multiply(
-                    tmp, processed_img)
+                tmp = ImageChops.multiply(tmp, processed_img)
 
                 # alpha_composite works with black but not white color
                 if self.use_alpha_composite:
@@ -90,7 +85,8 @@ class ImageWorkbench():
                 else:
                     # Add works with white but not with black color
                     self.img_workspace = ImageChops.add(
-                        self.img_workspace, tmp, offset=self.offset)
+                        self.img_workspace, tmp, offset=self.offset
+                    )
 
                 # Debug
                 # processed_img.save(os.curdir + f"/proc_{i}.png")
@@ -104,10 +100,12 @@ class ImageWorkbench():
 
         if self.apply_dirt:
             self.img_workspace = Image.alpha_composite(
-                self.img_workspace, self.img_dirt)
+                self.img_workspace, self.img_dirt
+            )
         if self.apply_spec:
             self.img_workspace = Image.alpha_composite(
-                self.img_workspace, self.img_spec)
+                self.img_workspace, self.img_spec
+            )
         # Can be used to hide alpha pixels
         # background = Image.new("RGBA", self.img_workspace.size, (0, 0, 0))
         # self.img_workspace = Image.alpha_composite(background, self.img_workspace)
