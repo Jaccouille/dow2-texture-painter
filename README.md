@@ -15,7 +15,7 @@ folder.
 
 Only tested with python 3.7 on linux environment
 
-## Developing
+## Developing
 From the root directory:
 
 Run `make venv` to generate the virtual env
