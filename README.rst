@@ -17,7 +17,7 @@ folder.
 
 Only tested with python 3.7 on linux environment
 
-Contributing
+Developing
 ============
 From the root directory:
 
