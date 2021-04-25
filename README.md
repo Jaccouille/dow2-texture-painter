@@ -1,6 +1,4 @@
-=========
-Dawn of War 2 texture painter
-=========
+# Dawn of War 2 texture painter
 
 This is a GUI desktop application which allow the user to recolor Dawn of War 2
 gray scale diffuse texture using the default army color pattern from the game.
@@ -17,8 +15,7 @@ folder.
 
 Only tested with python 3.7 on linux environment
 
-Developing
-============
+## Developing
 From the root directory:
 
 Run `make venv` to generate the virtual env
@@ -27,6 +24,6 @@ Run `make venv` to generate the virtual env
 
 Run following command to generate an EXE file with pyinstaller:
 
-`make build-bin-folder` for an executable and its the required library files
+`make build-bin-folder` for an executable and its required library files
 in the same folder
 `make build-bin-file` for an one file executable
