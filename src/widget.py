@@ -164,9 +164,9 @@ class FramePatternList(tk.Frame):
         self.lb.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
 
 
-class FrameBatchTool(tk.Frame):
+class BatchEditTopLevel(tk.Toplevel):
     def __init__(self, master=None, cnf={}, **kw):
-        super(FrameBatchTool, self).__init__(master=master, cnf={}, **kw)
+        super(BatchEditTopLevel, self).__init__(master=master, cnf={}, **kw)
 
         self.initialize()
 

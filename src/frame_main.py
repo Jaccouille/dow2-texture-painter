@@ -11,7 +11,7 @@ from src.widget import (
     FrameColorChooser,
     FrameChannelList,
     FrameSlider,
-    FrameBatchTool,
+    BatchEditTopLevel,
     FramePatternList,
 )
 from src.constant import (
@@ -27,8 +27,6 @@ import src.color_pattern_handler
 from src.color_pattern_handler import army_color_pattern
 from src.image_process import ImageWorkbench
 
-VIEW_IMG_TOOL = 0
-VIEW_BATCH_EDIT_TOOL = 1
 PATTERN_LIST_DEFAULT_WIDTH = 166
 
 path = os.path.dirname(__file__)
@@ -74,16 +72,6 @@ class ArmyPainter(tk.Tk):
         self.frame_army_pattern = FramePatternList(self.frame_img)
         self.frame_army_pattern.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.bind("<<ListboxSelect>>", self.on_listbox_select)
-
-        # Frame containing the batch operation tools
-        self.frame_batch_tools = FrameBatchTool(
-            self,
-            width=DEFAULT_IMG_SIZE * 2,
-            height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT,
-            bd=2,
-            relief=tk.RIDGE,
-        )
-        self.frame_batch_tools.pack_forget()
 
         # Defining menubar
         self.define_menu()
@@ -171,19 +159,10 @@ class ArmyPainter(tk.Tk):
             menubar.add_cascade(label="Edit", menu=editmenu)
 
         def define_toolmenu():
-            self.tool_view = tk.IntVar()
             toolmenu = tk.Menu(menubar, tearoff=0)
-            toolmenu.add_radiobutton(
-                label="Image Tools",
-                variable=self.tool_view,
-                value=VIEW_IMG_TOOL,
-                command=self.toggle_tool_view,
-            )
-            toolmenu.add_radiobutton(
+            toolmenu.add_command(
                 label="Batch Edit Tools",
-                variable=self.tool_view,
-                value=VIEW_BATCH_EDIT_TOOL,
-                command=self.toggle_tool_view,
+                command=self.open_batch_edit_tools,
             )
             menubar.add_cascade(label="Tools", menu=toolmenu)
 
@@ -211,13 +190,15 @@ class ArmyPainter(tk.Tk):
         )
         self.label_img_tem.pack(side=tk.LEFT, fill=tk.Y)
 
-    def toggle_tool_view(self, Event=None):
-        if self.tool_view.get() is VIEW_IMG_TOOL:
-            self.frame_batch_tools.pack_forget()
-            self.frame_img_tools.pack(side=tk.TOP, fill=tk.BOTH)
-        elif self.tool_view.get() is VIEW_BATCH_EDIT_TOOL:
-            self.frame_img_tools.pack_forget()
-            self.frame_batch_tools.pack(side=tk.TOP, fill=tk.BOTH)
+    def open_batch_edit_tools(self, Event=None):
+        # Frame containing the batch operation tools
+        self.frame_batch_tools = BatchEditTopLevel(
+            self,
+            width=DEFAULT_IMG_SIZE * 2,
+            height=COLOR_BOX_SIZE + COLOR_BTN_HEIGHT,
+            bd=2,
+            relief=tk.RIDGE,
+        )
 
     def on_slider_update(self, value: float):
         self.img_wbench.brightness = self.frame_sliders.brightness_slider.get()
