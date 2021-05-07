@@ -37,7 +37,6 @@ class ImageWorkbench:
         self.apply_alpha = False
         self.apply_dirt = False
         self.apply_spec = False
-        self.use_alpha_composite = False
         self.color_op = ColorOps.OVERLAY.value
 
     def process_coloring(self):

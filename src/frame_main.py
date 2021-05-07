@@ -62,14 +62,14 @@ class ArmyPainter(tk.Tk):
         self.frame_img_tools.pack(side=tk.TOP, fill=tk.BOTH)
 
         # Defining slave widget
-        self.define_frame_img_tool()
+        self.define_frame_workspace_tool()
 
         # Frame containing the texture images
         self.frame_img = tk.Frame(self)
         self.frame_img.pack(side=tk.BOTTOM, fill=tk.X, expand=True)
 
         # Defining slave widget
-        self.define_frame_img()
+        self.define_frame_workspace()
         self.frame_army_pattern = FramePatternList(self.frame_img)
         self.frame_army_pattern.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.bind("<<ListboxSelect>>", self.on_listbox_select)
@@ -80,7 +80,7 @@ class ArmyPainter(tk.Tk):
         # Initialize the default workspace
         self.reset_workspace()
 
-    def define_frame_img_tool(self):
+    def define_frame_workspace_tool(self):
         # Setting color boxes frame
         self.frame_color_chooser = FrameColorChooser(
             self.frame_img_tools,
@@ -155,14 +155,6 @@ class ArmyPainter(tk.Tk):
                 offvalue=0,
                 command=self.on_spec_toggle,
             )
-            self.use_alpha_composite = tk.BooleanVar()
-            editmenu.add_checkbutton(
-                label="Use Alpha Composite",
-                variable=self.use_alpha_composite,
-                onvalue=1,
-                offvalue=0,
-                command=self.on_alpha_composite_toggle,
-            )
             menubar.add_cascade(label="Edit", menu=editmenu)
 
         def define_toolmenu():
@@ -184,7 +176,7 @@ class ArmyPainter(tk.Tk):
         self.bind("<Control-d>", self.batch_edit)
         self.bind("<Control-r>", self.reset_workspace)
 
-    def define_frame_img(self):
+    def define_frame_workspace(self):
         self.img_dif = ImageTk.PhotoImage(self.img_wbench.img_og_dif)
         self.label_img_dif = tk.Label(
             self.frame_img, image=self.img_dif, relief=tk.RAISED
@@ -248,10 +240,6 @@ class ArmyPainter(tk.Tk):
 
     def on_spec_toggle(self):
         self.img_wbench.apply_spec = self.apply_spec.get()
-        self.refresh_workspace()
-
-    def on_alpha_composite_toggle(self):
-        self.img_wbench.use_alpha_composite = self.use_alpha_composite.get()
         self.refresh_workspace()
 
     def refresh_window_size(self):
