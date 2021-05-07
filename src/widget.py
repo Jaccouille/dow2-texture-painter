@@ -54,9 +54,7 @@ class FrameColorChooser(tk.Frame):
                     width=COLOR_BOX_SIZE,
                 )
             )
-            self.color_boxes[i].bind(
-                "<Button-1>", partial(self.apply_color, i)
-            )
+            self.color_boxes[i].bind("<Button-1>", partial(self.apply_color, i))
             self.color_boxes[i].place(
                 anchor=tk.NW, x=COLOR_BOX_SIZE * i, y=COLOR_BTN_HEIGHT
             )
@@ -70,9 +68,7 @@ class FrameColorChooser(tk.Frame):
                     command=partial(self.apply_color, i),
                 )
             )
-            self.color_buttons[i].place(
-                anchor=tk.NW, x=COLOR_BOX_SIZE * i + i * 1, y=0
-            )
+            self.color_buttons[i].place(anchor=tk.NW, x=COLOR_BOX_SIZE * i + i * 1, y=0)
         self.draw_rgb_value()
 
     def apply_color(self, btn_idx: int, Event=None):
@@ -136,6 +132,22 @@ class FrameSlider(tk.Frame):
         self.offset_slider.pack(side=tk.TOP, fill=tk.X)
 
 
+class FrameColorOperation(tk.LabelFrame):
+    def __init__(self, master=None, cnf={}, **kw):
+        super(FrameColorOperation, self).__init__(master=master, cnf={}, **kw)
+        self.color_operation_btn = {"Overlay": None, "Screen": None, "Multiply": None}
+        self.var = tk.StringVar(value="Overlay")
+        for op_name, value in self.color_operation_btn.items():
+            value = tk.Radiobutton(
+                self,
+                text=op_name,
+                variable=self.var,
+                value=op_name,
+                command=self._root().refresh_workspace,
+            )
+            value.pack(side=tk.LEFT)
+
+
 class FramePatternList(tk.Frame):
     def __init__(self, master=None, cnf={}, **kw):
         super(FramePatternList, self).__init__(master=master, cnf={}, **kw)
@@ -189,9 +201,9 @@ class BatchEditTopLevel(tk.Toplevel):
         # Destination Format Option Menu
         self.frame_destination_format = tk.Frame(self)
         self.frame_destination_format.pack(side=tk.TOP, fill=tk.X)
-        tk.Label(
-            self.frame_destination_format, text="Destination format:"
-        ).pack(side=tk.LEFT)
+        tk.Label(self.frame_destination_format, text="Destination format:").pack(
+            side=tk.LEFT
+        )
         self.dest_format = tk.StringVar(self)
         self.dest_format.set(SAVE_EXT_LIST[0].upper())
         self.dest_menu = tk.OptionMenu(
@@ -218,9 +230,9 @@ class BatchEditTopLevel(tk.Toplevel):
         ):
             entry_frame = tk.Frame(frame)
             entry_frame.pack(side=tk.TOP, fill=tk.X)
-            tk.Label(
-                entry_frame, text=label, width=label_width, anchor=tk.W
-            ).pack(side=tk.LEFT)
+            tk.Label(entry_frame, text=label, width=label_width, anchor=tk.W).pack(
+                side=tk.LEFT
+            )
             entry_frame.entry_value = tk.StringVar(value=starting_value)
             entry_path = tk.Entry(
                 entry_frame,
@@ -236,9 +248,5 @@ class BatchEditTopLevel(tk.Toplevel):
             ).pack(side=tk.LEFT)
             return entry_frame
 
-        self.frame_batch_src_path = widget_entry_template(
-            self, "Source folder:"
-        )
-        self.frame_batch_dest_path = widget_entry_template(
-            self, "Destination folder:"
-        )
+        self.frame_batch_src_path = widget_entry_template(self, "Source folder:")
+        self.frame_batch_dest_path = widget_entry_template(self, "Destination folder:")

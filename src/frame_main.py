@@ -10,6 +10,7 @@ import traceback
 from src.widget import (
     FrameColorChooser,
     FrameChannelList,
+    FrameColorOperation,
     FrameSlider,
     BatchEditTopLevel,
     FramePatternList,
@@ -89,6 +90,12 @@ class ArmyPainter(tk.Tk):
             relief=tk.RIDGE,
         )
         self.frame_color_chooser.pack(side=tk.LEFT, fill=tk.Y)
+
+        self.frame_color_op_option = FrameColorOperation(
+            self.frame_img_tools,
+            text="Color Operation",
+        )
+        self.frame_color_op_option.pack(side=tk.TOP, fill=tk.X)
 
         # Setting channel list frame
         self.frame_channel_select = FrameChannelList(
