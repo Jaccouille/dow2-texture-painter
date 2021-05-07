@@ -143,7 +143,7 @@ class FrameColorOperation(tk.LabelFrame):
                 text=op_name,
                 variable=self.var,
                 value=op_name,
-                command=self._root().refresh_workspace,
+                command=self._root().color_operation_update,
             )
             value.pack(side=tk.LEFT)
 

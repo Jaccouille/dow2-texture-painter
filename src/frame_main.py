@@ -232,6 +232,11 @@ class ArmyPainter(tk.Tk):
         self.img_dif = ImageTk.PhotoImage(self.img_wbench.refresh_workspace())
         self.label_img_dif.config(image=self.img_dif)
 
+    def color_operation_update(self):
+        color_op = self.frame_color_op_option.var.get()
+        self.img_wbench.color_op = color_op
+        self.refresh_workspace()
+
     def on_apply_alpha_toggle(self):
         self.img_wbench.apply_alpha = (
             self.frame_channel_select.apply_alpha.get()
