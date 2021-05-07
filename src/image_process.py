@@ -34,7 +34,6 @@ class ImageWorkbench:
         self.img_og_tem = create_placeholder_img()
         self.brightness = 40
         self.contrast = 100
-        self.offset = 0
         self.apply_alpha = False
         self.apply_dirt = False
         self.apply_spec = False
@@ -48,16 +47,20 @@ class ImageWorkbench:
         self.img_workspace = self.img_og_dif.copy()
         for color, channel in zip(self.colors, self.tem_channels):
             rgb = ImageColor.getrgb(color)
+
             # Ignore gray value as they are default
             # TODO: is this neccessary?
             if rgb == (128, 128, 128):
                 continue
+
             # Get grayscaled original img
             # TODO: useless variable as it is not altered
             gray_img = self.img_og_dif.copy()
             channel.convert("L")
+
             # Colorize grayscale image using channel as mask
             new_img = ImageOps.colorize(channel, (0, 0, 0), color).convert('RGBA')
+
             # Add alpha using channel as mask
             new_img.putalpha(channel)
 

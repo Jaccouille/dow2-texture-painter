@@ -210,7 +210,6 @@ class ArmyPainter(tk.Tk):
     def on_slider_update(self, value: float):
         self.img_wbench.brightness = self.frame_sliders.brightness_slider.get()
         self.img_wbench.contrast = self.frame_sliders.contrast_slider.get()
-        self.img_wbench.offset = self.frame_sliders.offset_slider.get()
         self.refresh_workspace()
 
     def save(self, Event=None):
@@ -382,7 +381,6 @@ class ArmyPainter(tk.Tk):
             color_box["bg"] = "#808080"
         self.frame_sliders.brightness_slider.set(40)
         self.frame_sliders.contrast_slider.set(100)
-        self.frame_sliders.offset_slider.set(0)
         self.frame_channel_select.lb.selection_set(first=0, last=3)
         self.select_channel()
         self.refresh_workspace()

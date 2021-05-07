@@ -119,19 +119,6 @@ class FrameSlider(tk.Frame):
         )
         self.contrast_slider.pack(side=tk.TOP, fill=tk.X)
 
-        # Offset slider
-        self.offset_slider = tk.Scale(
-            self,
-            label="Offset",
-            length=200,
-            from_=-100.0,
-            to=100.0,
-            orient=tk.HORIZONTAL,
-            command=self._root().on_slider_update,
-        )
-        self.offset_slider.pack(side=tk.TOP, fill=tk.X)
-
-
 class FrameColorOps(tk.LabelFrame):
     def __init__(self, master=None, cnf={}, **kw):
         super(FrameColorOps, self).__init__(master=master, cnf={}, **kw)
