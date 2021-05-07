@@ -8,6 +8,7 @@ from PIL import (
 )
 from src.constant import (
     DEFAULT_IMG_SIZE,
+    ColorOps
 )
 
 
@@ -38,24 +39,31 @@ class ImageWorkbench:
         self.apply_dirt = False
         self.apply_spec = False
         self.use_alpha_composite = False
-        self.color_op = "Overlay"
+        self.color_op = ColorOps.OVERLAY.value
 
     def process_coloring(self):
         """Process image with current workspace setting
         """
+        # Creating a copied image to work on
         self.img_workspace = self.img_og_dif.copy()
         for color, channel in zip(self.colors, self.tem_channels):
             rgb = ImageColor.getrgb(color)
+            # Ignore gray value as they are default
+            # TODO: is this neccessary?
             if rgb == (128, 128, 128):
                 continue
+            # Get grayscaled original img
+            # TODO: useless variable as it is not altered
             gray_img = self.img_og_dif.copy()
             channel.convert("L")
+            # Colorize grayscale image using channel as mask
             new_img = ImageOps.colorize(channel, (0, 0, 0), color).convert('RGBA')
+            # Add alpha using channel as mask
             new_img.putalpha(channel)
 
-            if self.color_op == "Overlay":
+            if self.color_op == ColorOps.OVERLAY.value:
                 new_img = ImageChops.overlay(gray_img, new_img)
-            elif self.color_op == "Multiply":
+            elif self.color_op == ColorOps.MULTIPLY.value:
                 new_img = ImageChops.multiply(gray_img, new_img)
             else:
                 new_img = ImageChops.screen(gray_img, new_img)
@@ -65,6 +73,7 @@ class ImageWorkbench:
             enhancer_brightness = ImageEnhance.Brightness(new_img)
             new_img = enhancer_brightness.enhance(self.contrast / 100)
 
+            # Paste processed image part on the workspace one
             self.img_workspace.paste(new_img, mask=channel)
 
     def refresh_workspace(self):

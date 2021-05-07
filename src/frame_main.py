@@ -10,7 +10,7 @@ import traceback
 from src.widget import (
     FrameColorChooser,
     FrameChannelList,
-    FrameColorOperation,
+    FrameColorOps,
     FrameSlider,
     BatchEditTopLevel,
     FramePatternList,
@@ -91,7 +91,7 @@ class ArmyPainter(tk.Tk):
         )
         self.frame_color_chooser.pack(side=tk.LEFT, fill=tk.Y)
 
-        self.frame_color_op_option = FrameColorOperation(
+        self.frame_color_op_option = FrameColorOps(
             self.frame_img_tools,
             text="Color Operation",
         )

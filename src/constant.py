@@ -1,3 +1,12 @@
+from enum import Enum
+
+
+class ColorOps(Enum):
+    OVERLAY = "Overlay"
+    SCREEN = "Screen"
+    MULTIPLY = "Multiply"
+
+
 OPEN_FILETYPES = (
     ("all", (".dds", ".png", ".jpg", ".bmp", ".tga", ".blp")),
     ("Direct Draw Surface", ".dds"),
@@ -20,6 +29,7 @@ COLOR_BTN_HEIGHT = 26
 FRAME_TOOL_HEIGHT = COLOR_BOX_SIZE + COLOR_BTN_HEIGHT + 90
 
 DEFAULT_IMG_SIZE = 256
+
 
 # Dawn of War 2 original materials data
 DOW2_MATERIALS = {

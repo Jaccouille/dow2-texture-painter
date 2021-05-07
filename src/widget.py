@@ -3,7 +3,7 @@ import os
 from tkinter import colorchooser, filedialog
 from functools import partial
 from src.color_pattern_handler import army_color_pattern
-from src.constant import OPEN_FILETYPES, SAVE_EXT_LIST
+from src.constant import OPEN_FILETYPES, SAVE_EXT_LIST, ColorOps
 
 COLOR_BOX_SIZE = 90
 COLOR_BTN_HEIGHT = 26
@@ -132,11 +132,11 @@ class FrameSlider(tk.Frame):
         self.offset_slider.pack(side=tk.TOP, fill=tk.X)
 
 
-class FrameColorOperation(tk.LabelFrame):
+class FrameColorOps(tk.LabelFrame):
     def __init__(self, master=None, cnf={}, **kw):
-        super(FrameColorOperation, self).__init__(master=master, cnf={}, **kw)
-        self.color_operation_btn = {"Overlay": None, "Screen": None, "Multiply": None}
-        self.var = tk.StringVar(value="Overlay")
+        super(FrameColorOps, self).__init__(master=master, cnf={}, **kw)
+        self.color_operation_btn = {op.value:None for op in ColorOps}
+        self.var = tk.StringVar(value=ColorOps.OVERLAY.value)
         for op_name, value in self.color_operation_btn.items():
             value = tk.Radiobutton(
                 self,
