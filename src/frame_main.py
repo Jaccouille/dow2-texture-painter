@@ -27,11 +27,12 @@ from src.constant import (
 import src.color_pattern_handler
 from src.color_pattern_handler import army_color_pattern
 from src.image_process import ImageWorkbench
+from pathlib import Path
 
 PATTERN_LIST_DEFAULT_WIDTH = 166
 
-path = os.path.dirname(__file__)
-
+bundle_dir = Path(__file__).parent
+APP_ICON_PATH = bundle_dir / "assets/icon_64x64.png"
 
 class ArmyPainter(tk.Tk):
     def __init__(self):
@@ -43,7 +44,7 @@ class ArmyPainter(tk.Tk):
         dimension = f"{min_width}x{min_height}"
         self.geometry(dimension)
         self.iconphoto(
-            False, tk.PhotoImage(file=os.curdir + "/assets/icon_64x64.png")
+            False, tk.PhotoImage(file=APP_ICON_PATH)
         )
         self.minsize(min_width, min_height)
         self.title("Army Painter")

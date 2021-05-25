@@ -17,8 +17,9 @@ venv:
 run-dev: ## launch main frame entry point
 	texture-painter
 
+# On windows, use ";" separator instead of ":" for the --add-data args
 build-bin-folder: ## build binary folder
-	pyinstaller --windowed --noconfirm --add-data "$(APP_DIR)/data:data" --hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py
+	pyinstaller --windowed --noconfirm --add-data "$(APP_DIR)/data:data" --add-data "$(APP_DIR)/assets:assets" --hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py/
 
 build-bin-file: ## build binary
 	pyinstaller --onefile --windowed --noconfirm --add-data "$(APP_DIR)/data:data" --hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py
