@@ -34,6 +34,7 @@ PATTERN_LIST_DEFAULT_WIDTH = 166
 bundle_dir = Path(__file__).parent
 APP_ICON_PATH = bundle_dir / "assets/icon_64x64.png"
 
+
 class ArmyPainter(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -43,9 +44,7 @@ class ArmyPainter(tk.Tk):
         min_height = DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT
         dimension = f"{min_width}x{min_height}"
         self.geometry(dimension)
-        self.iconphoto(
-            False, tk.PhotoImage(file=APP_ICON_PATH)
-        )
+        self.iconphoto(False, tk.PhotoImage(file=APP_ICON_PATH))
         self.minsize(min_width, min_height)
         self.title("Army Painter")
 
@@ -105,9 +104,7 @@ class ArmyPainter(tk.Tk):
         self.frame_channel_select.pack(side=tk.LEFT, fill=tk.Y)
 
         # Setting sliders
-        self.frame_sliders = FrameSlider(
-            self.frame_img_tools, relief=tk.RIDGE, bd=2
-        )
+        self.frame_sliders = FrameSlider(self.frame_img_tools, relief=tk.RIDGE, bd=2)
         self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
 
     def define_menu(self):
@@ -126,7 +123,7 @@ class ArmyPainter(tk.Tk):
                 accelerator="Ctrl+A",
             )
             filemenu.add_command(
-                label="Save", command=self.save, accelerator="Ctrl+S"
+                label="Save as", command=self.save, accelerator="Ctrl+S"
             )
             filemenu.add_separator()
             filemenu.add_command(label="Exit", command=self.quit)
@@ -212,9 +209,19 @@ class ArmyPainter(tk.Tk):
         :type Event: [type], optional
         """
         filename = filedialog.asksaveasfilename(
-            initialdir=os.curdir, filetypes=SAVE_FILETYPES
+            initialdir=os.curdir,
+            filetypes=SAVE_FILETYPES,
+            defaultextension=SAVE_FILETYPES[0],
+            initialfile=self.og_filename,
         )
-        self.img_wbench.save(filename)
+        if filename:
+            try:
+                self.img_wbench.save(filename)
+            except KeyError as error:
+                tk.messagebox.showerror(
+                    title="Wrong File Extension",
+                    message='Error: wrong extension, choose an extension from the "Save as type" list',
+                )
 
     def refresh_workspace(self):
         """Refresh the workspace image with current settings"""
@@ -230,9 +237,7 @@ class ArmyPainter(tk.Tk):
         self.refresh_workspace()
 
     def on_apply_alpha_toggle(self):
-        self.img_wbench.apply_alpha = (
-            self.frame_channel_select.apply_alpha.get()
-        )
+        self.img_wbench.apply_alpha = self.frame_channel_select.apply_alpha.get()
         self.refresh_workspace()
 
     def on_dirt_toggle(self):
@@ -247,9 +252,7 @@ class ArmyPainter(tk.Tk):
         """Refresh window size using current images width"""
         img_dif_size = self.img_wbench.img_workspace.size
         img_tem_size = self.img_wbench.img_og_tem.size
-        new_width = (
-            img_dif_size[0] + img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
-        )
+        new_width = img_dif_size[0] + img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
 
         # Assuming both image got same size
         new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
@@ -282,16 +285,12 @@ class ArmyPainter(tk.Tk):
         :param Event: event triggered from widget, defaults to None
         :type Event: [type], optional
         """
-        self.img_wbench.tem_selected = (
-            self.frame_channel_select.lb.curselection()
-        )
+        self.img_wbench.tem_selected = self.frame_channel_select.lb.curselection()
         # TODO: refactor lazy check with is load batch
         # Did to avoid exception in ImageWorkbench processing
         if self.img_wbench.apply_alpha and not self.is_load_batch:
             self.refresh_workspace()
-        self.img = ImageTk.PhotoImage(
-            self.img_wbench.refresh_team_colour_img()
-        )
+        self.img = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
         self.label_img_tem.config(image=self.img)
 
     def load_file(self, filepath: str):
@@ -336,17 +335,17 @@ class ArmyPainter(tk.Tk):
         self.img_wbench.load_specular_file(filepath)
 
     def open_diffuse(self, Event=None):
-        f = filedialog.askopenfile(
-            initialdir=os.curdir, filetypes=OPEN_FILETYPES
-        )
+        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         if f is None:
             return
+        # Saving the filename just to set it as default file name on the save
+        # file dialog, truncate the file extension because it is automatically set
+        # by the save dialog
+        self.og_filename = Path(f.name).name.split(".")[0]
         self.load_file(f.name)
 
     def open_channel(self, Event=None):
-        f = filedialog.askopenfile(
-            initialdir=os.curdir, filetypes=OPEN_FILETYPES
-        )
+        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         if f is None:
             return
         self.load_file(f.name)
@@ -376,9 +375,7 @@ class ArmyPainter(tk.Tk):
 
     def save_pattern(self):
         pattern_name = askstring("Pattern Name", "Choose a pattern name")
-        colors = [
-            color["bg"] for color in self.frame_color_chooser.color_boxes
-        ]
+        colors = [color["bg"] for color in self.frame_color_chooser.color_boxes]
         src.color_pattern_handler.save(name=pattern_name, colors=colors)
         self.frame_army_pattern.load_pattern_list()
         self.frame_army_pattern.lb.selection_set(first="end", last="end")
@@ -392,7 +389,8 @@ class ArmyPainter(tk.Tk):
         self.reset_workspace()
 
     def report_callback_exception(self, exc, val, tb):
-        showerror("Error", message=traceback.format_exc())
+        # showerror("Error", message=traceback.format_exc())
+        pass
 
 
 def main():
