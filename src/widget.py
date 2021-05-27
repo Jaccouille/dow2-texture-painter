@@ -3,7 +3,7 @@ import os
 from tkinter import colorchooser, filedialog
 from functools import partial
 from src.color_pattern_handler import army_color_pattern
-from src.constant import OPEN_FILETYPES, SAVE_EXT_LIST, ColorOps
+from src.constant import APP_ICON_PATH, OPEN_FILETYPES, SAVE_EXT_LIST, ColorOps
 
 COLOR_BOX_SIZE = 90
 COLOR_BTN_HEIGHT = 26
@@ -168,6 +168,7 @@ class BatchEditTopLevel(tk.Toplevel):
         super(BatchEditTopLevel, self).__init__(master=master, cnf={}, **kw)
 
         self.initialize()
+        self.iconphoto(False, tk.PhotoImage(file=APP_ICON_PATH))
 
     def initialize(self):
         # Source format Checkbox list
@@ -184,6 +185,8 @@ class BatchEditTopLevel(tk.Toplevel):
                 )
             )
             self.source_format_list[idx].pack(side=tk.LEFT)
+        # Setting default input format
+        self.source_format_list[0].toggle()
 
         # Destination Format Option Menu
         self.frame_destination_format = tk.Frame(self)
@@ -204,6 +207,7 @@ class BatchEditTopLevel(tk.Toplevel):
             text="Process Batch Edit",
             command=self._root().batch_edit,
         ).pack(side=tk.LEFT)
+
 
         def select_folder(folder_path, Event=None):
             folder_path.set(filedialog.askdirectory(initialdir=os.curdir))

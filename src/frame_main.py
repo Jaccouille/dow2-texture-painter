@@ -16,6 +16,7 @@ from src.widget import (
     FramePatternList,
 )
 from src.constant import (
+    APP_ICON_PATH,
     DEFAULT_IMG_SIZE,
     COLOR_BOX_SIZE,
     COLOR_BTN_HEIGHT,
@@ -30,9 +31,6 @@ from src.image_process import ImageWorkbench
 from pathlib import Path
 
 PATTERN_LIST_DEFAULT_WIDTH = 166
-
-bundle_dir = Path(__file__).parent
-APP_ICON_PATH = bundle_dir / "assets/icon_64x64.png"
 
 
 class ArmyPainter(tk.Tk):
