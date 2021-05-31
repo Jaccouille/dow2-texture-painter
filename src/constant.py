@@ -31,9 +31,6 @@ FRAME_TOOL_HEIGHT = COLOR_BOX_SIZE + COLOR_BTN_HEIGHT + 90
 
 DEFAULT_IMG_SIZE = 256
 
-bundle_dir = Path(__file__).parent
-APP_ICON_PATH = bundle_dir / "assets/icon_64x64.png"
-
 # Dawn of War 2 original materials data
 DOW2_MATERIALS = {
     "Chaos Black": {

@@ -16,7 +16,6 @@ from src.widget import (
     FramePatternList,
 )
 from src.constant import (
-    APP_ICON_PATH,
     DEFAULT_IMG_SIZE,
     COLOR_BOX_SIZE,
     COLOR_BTN_HEIGHT,
@@ -32,6 +31,8 @@ from pathlib import Path
 
 PATTERN_LIST_DEFAULT_WIDTH = 166
 
+bundle_dir = Path(__file__).parent
+APP_ICON_PATH = bundle_dir / "assets/icon_64x64.png"
 
 class ArmyPainter(tk.Tk):
     def __init__(self):
@@ -194,6 +195,7 @@ class ArmyPainter(tk.Tk):
             bd=2,
             relief=tk.RIDGE,
         )
+        self.frame_batch_tools.iconphoto(False, tk.PhotoImage(file=APP_ICON_PATH))
 
     def on_slider_update(self, value: float):
         self.img_wbench.brightness = self.frame_sliders.brightness_slider.get()
