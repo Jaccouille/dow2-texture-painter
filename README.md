@@ -24,9 +24,11 @@ Dawn of War 2 unit textures are composed of the following files:
 * {unit_name}_spec.dds -> specular
 * {unit_name}_emi.dds -> emissive
 * {unit_name}_ocl.dds -> oclusion
+* {unit_name}_nrm.dds -> normal map
 
 This tool assumes that the textures are located in the unit folder, e.g a folder
 named "space marine" contains all textures for a space marine model.
+Emissive, oclusion and normal map textures are not useful to color the diffuse texture.
 
 Click on `File -> Open` and select a diffuse texture, it will load the
 {unit_name}_tem.dds texture located in the same folder, the team color file
