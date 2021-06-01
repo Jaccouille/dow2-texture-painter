@@ -16,7 +16,7 @@ folder.
 Only tested with python 3.7 on linux environment
 
 
-![](https://i.imgur.com/okFgRmE.jpg)
+![](https://i.imgur.com/VXFjzkh.jpg)
 
 ## How to use
 
