@@ -62,7 +62,7 @@ class FrameColorChooser(tk.Frame):
             self.color_buttons.append(
                 tk.Button(
                     self,
-                    text=f"Choose Color {i}",
+                    text=f"Choose Color {i + 1}",
                     wraplength=COLOR_BOX_SIZE,
                     relief=tk.RAISED,
                     bd=2,
