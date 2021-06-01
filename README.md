@@ -15,6 +15,9 @@ folder.
 
 Only tested with python 3.7 on linux environment
 
+
+![](https://i.imgur.com/okFgRmE.jpg)
+
 ## How to use
 
 This tool was made to precisely work with Dawn of War 2 texture in order to reduce
