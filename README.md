@@ -24,12 +24,12 @@ This tool was made to precisely work with Dawn of War 2 texture in order to redu
 editing time.
 
 Dawn of War 2 unit textures are composed of the following files:
-{unit_name}_dif.dds -> diffuse
-{unit_name}_tem.dds -> team color mask
-{unit_name}_drt.dds -> dirt
-{unit_name}_spec.dds -> specular
-{unit_name}_emi.dds -> emissive
-{unit_name}_ocl.dds -> oclusion
+* {unit_name}_dif.dds -> diffuse
+* {unit_name}_tem.dds -> team color mask
+* {unit_name}_drt.dds -> dirt
+* {unit_name}_spec.dds -> specular
+* {unit_name}_emi.dds -> emissive
+* {unit_name}_ocl.dds -> oclusion
 
 This tool assumes that the textures are located in the unit folder, e.g a folder
 named "space marine" contains all textures for a space marine model.
@@ -41,10 +41,10 @@ diffuse texture. Can open following format: DDS, PNG, JPG, BMP, TGA and BLP
 
 Click on the top left boxes to pick a color which correspond to following mask of the
 team color texture:
-Color 1 -> red mask
-Color 2 -> green mask
-Color 3 -> blue mask
-Color 4 -> alpha mask
+* Color 1 -> red mask
+* Color 2 -> green mask
+* Color 3 -> blue mask
+* Color 4 -> alpha mask
 
 Once you're done, you can save your edit by clicking on `File -> Save`, can save
 with following format : PNG, JPG, BMP and TGA
