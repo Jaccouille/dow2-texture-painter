@@ -10,6 +10,7 @@ Users can also make their custom army pattern and save it. Batch editing is supp
 
 
 ![](https://i.imgur.com/VXFjzkh.jpg)
+_dow2 texture painter application loaded with the hormagaunt grayscale diffuse texture._
 
 ## How to use
 
