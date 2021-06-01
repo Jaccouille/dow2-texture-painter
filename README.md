@@ -54,7 +54,7 @@ select them on the list located bottom right.
 
 You can save your current color pattern by clicking on `Save pattern`.
 
-You can apply dirt & specular texture by clicking on `File -> Apply dirt/specular`,
+You can apply dirt & specular texture by clicking on `Edit -> Apply dirt/specular`,
 those textures must be in same folder as the diffuse one.
 
 You can replace color by transparency by selecting the color mask in the list
