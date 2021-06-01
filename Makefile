@@ -20,7 +20,7 @@ run-dev: ## launch main frame entry point
 # On windows, use ";" separator instead of ":" for the --add-data args
 # --icon option isn't working alongisde --name option
 build-bin-folder-win: ## build binary folder for windows
-	pyinstaller --name "dow2-texture-painter" --windowed --noconfirm --add-data "$(APP_DIR)/data;data" --add-data "$(APP_DIR)/assets;assets" --hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py/
+	pyinstaller --name "dow2-texture-painter" --windowed --noconfirm --add-data "$(APP_DIR)/data;data" --add-data "$(APP_DIR)/assets;assets" --add-data "readme.md;." --hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py/
 
 build-bin-folder: ## build binary folder
 	pyinstaller --name "dow2-texture-painter" --windowed --noconfirm --add-data "$(APP_DIR)/data:data" --add-data "$(APP_DIR)/assets:assets" --hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py/
