@@ -61,6 +61,8 @@ directory where your textures are located, input format, output format and the
 destination directory, the name of the colored files will be the same as the
 original one, if input & output file have the same format, the output will overwrite
 the original diffuse texture. Batch edit tool does not process subfolder.
+Batch edit only works for diffuse texture ending with "_dif", such as {unit_name}_dif.dds,
+because it's the name format for Dawn of War 2 diffuse texture.
 
 ## Developing
 From the root directory:
