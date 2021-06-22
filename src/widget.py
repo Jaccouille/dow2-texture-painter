@@ -1,4 +1,6 @@
 import tkinter as tk
+from tkinter.constants import HORIZONTAL
+from tkinter.ttk import Progressbar
 import os
 from tkinter import colorchooser, filedialog
 from functools import partial
@@ -120,10 +122,11 @@ class FrameSlider(tk.Frame):
         )
         self.contrast_slider.pack(side=tk.TOP, fill=tk.X)
 
+
 class FrameColorOps(tk.LabelFrame):
     def __init__(self, master=None, cnf={}, **kw):
         super(FrameColorOps, self).__init__(master=master, cnf={}, **kw)
-        self.color_operation_btn = {op.value:None for op in ColorOps}
+        self.color_operation_btn = {op.value: None for op in ColorOps}
         self.var = tk.StringVar(value=ColorOps.OVERLAY.value)
         for op_name, value in self.color_operation_btn.items():
             value = tk.Radiobutton(
@@ -168,25 +171,40 @@ class BatchEditTopLevel(tk.Toplevel):
     def __init__(self, master=None, cnf={}, **kw):
         super(BatchEditTopLevel, self).__init__(master=master, cnf={}, **kw)
 
+        self.resizable(width=False, height=False)
         self.initialize()
+
+    def get_source_format_selected(self):
+        source_format_selected = [
+            chk_btn.cget("text").lower()
+            for chk_btn, state in self.source_format_list
+            if state.get() == True
+        ]
+        return source_format_selected
 
     def initialize(self):
         # Source format Checkbox list
         self.source_format_list = []
         self.frame_source_format = tk.LabelFrame(self, text="Source formats")
         self.frame_source_format.pack(side=tk.TOP, fill=tk.BOTH)
+        # Tuple list to save btn widget & the checkbox state variable
         for idx, filetype in enumerate(OPEN_FILETYPES[1:]):
+            checkbox_state = tk.IntVar()
             self.source_format_list.append(
-                tk.Checkbutton(
-                    self.frame_source_format,
-                    text=filetype[1][1:].upper(),
-                    onvalue=True,
-                    offvalue=False,
+                (
+                    tk.Checkbutton(
+                        self.frame_source_format,
+                        text=filetype[1][1:].upper(),
+                        variable=checkbox_state,
+                        onvalue=True,
+                        offvalue=False,
+                    ),
+                    checkbox_state,
                 )
             )
-            self.source_format_list[idx].pack(side=tk.LEFT)
+            self.source_format_list[idx][0].pack(side=tk.LEFT)
         # Setting default input format
-        self.source_format_list[0].toggle()
+        self.source_format_list[0][0].toggle()
 
         # Destination Format Option Menu
         self.frame_destination_format = tk.Frame(self)
@@ -208,9 +226,9 @@ class BatchEditTopLevel(tk.Toplevel):
             command=self._root().batch_edit,
         ).pack(side=tk.LEFT)
 
-
-        def select_folder(folder_path, Event=None):
+        def _select_folder(folder_path, Event=None):
             folder_path.set(filedialog.askdirectory(initialdir=os.curdir))
+            self.focus()
 
         def widget_entry_template(
             frame,
@@ -235,9 +253,28 @@ class BatchEditTopLevel(tk.Toplevel):
             tk.Button(
                 entry_frame,
                 text="...",
-                command=lambda: (select_folder(entry_frame.entry_value)),
+                command=lambda: (_select_folder(entry_frame.entry_value)),
             ).pack(side=tk.LEFT)
             return entry_frame
 
         self.frame_batch_src_path = widget_entry_template(self, "Source folder:")
         self.frame_batch_dest_path = widget_entry_template(self, "Destination folder:")
+
+        self.frame_progress_bar = tk.LabelFrame(
+            self, relief=tk.RIDGE, bd=2, text="Awaiting process"
+        )
+        self.frame_progress_bar.pack(side=tk.TOP, fill=tk.BOTH)
+
+        self.progress_bar = Progressbar(
+            self.frame_progress_bar,
+            orient=HORIZONTAL,
+            length=self.cget("width"),
+            mode="determinate",
+        )
+        self.progress_bar.pack(side=tk.LEFT)
+
+    def update_progress_bar_label(self, current: int):
+        max = self.progress_bar["maximum"]
+        self.progress_bar["value"] = current
+        self.frame_progress_bar.configure(text=f"Completed {current}/{max} file(s)")
+        self.progress_bar.update()

@@ -48,7 +48,6 @@ class ArmyPainter(tk.Tk):
         self.title("Army Painter")
 
         self.img_wbench = ImageWorkbench()
-        self.is_load_batch = False
 
         # Frame containing tools to edit the image
         self.frame_img_tools = tk.Frame(
@@ -288,7 +287,7 @@ class ArmyPainter(tk.Tk):
         self.img_wbench.tem_selected = self.frame_channel_select.lb.curselection()
         # TODO: refactor lazy check with is load batch
         # Did to avoid exception in ImageWorkbench processing
-        if self.img_wbench.apply_alpha and not self.is_load_batch:
+        if self.img_wbench.apply_alpha:
             self.refresh_workspace()
         self.img = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
         self.label_img_tem.config(image=self.img)
@@ -350,18 +349,45 @@ class ArmyPainter(tk.Tk):
             return
         self.load_file(f.name)
 
+    def _check_path(self, path:str):
+        if not os.path.exists(path):
+            showerror(title="Unexisting path", message=f"{path} does not exist.")
+            return False
+        return True
+
+    def _check_dif_format(self, filename:str, src_format:list):
+        name, ext = os.path.splitext(filename)
+        if ext[1:] in src_format and name.endswith("_dif"):
+            return True
+        return False
+
+
     def batch_edit(self, Event=None):
-        self.is_load_batch = True
         source = self.frame_batch_tools.frame_batch_src_path.entry_value.get()
         dest = self.frame_batch_tools.frame_batch_dest_path.entry_value.get()
         dest_format = self.frame_batch_tools.dest_format.get().lower()
-        for filename in os.listdir(source):
-            name, ext = os.path.splitext(filename)
-            if ext[1:] in OPEN_EXT_LIST and name.endswith("_dif"):
-                self.load_file(f"{source}/{filename}")
-                new_filename = name + f".{dest_format}"
-                self.img_wbench.save(f"{dest}/{new_filename}")
-        self.is_load_batch = False
+
+        # Checking if source & dest exist
+        if source == '':
+            showerror(title="No source directory", message="Please select a source directory.")
+            return
+        if dest == '':
+            showerror(title="No destination directory", message="Please select a destination directory.")
+            return
+        if not self._check_path(source) or not self._check_path(dest):
+            return
+
+        src_format = self.frame_batch_tools.get_source_format_selected()
+        filenames = [filename for filename in os.listdir(source) if self._check_dif_format(filename, src_format)]
+
+        self.frame_batch_tools.progress_bar["maximum"] = len(filenames)
+        for idx, filename in enumerate(filenames):
+            name, _ = os.path.splitext(filename)
+            self.load_file(f"{source}/{filename}")
+            new_filename = name + f".{dest_format}"
+            self.img_wbench.save(f"{dest}/{new_filename}")
+            self.frame_batch_tools.update_progress_bar_label(idx + 1)
+
 
     def reset_workspace(self, Event=None):
         self.img_wbench.img_workspace = self.img_wbench.img_og_dif
@@ -389,8 +415,7 @@ class ArmyPainter(tk.Tk):
         self.reset_workspace()
 
     def report_callback_exception(self, exc, val, tb):
-        # showerror("Error", message=traceback.format_exc())
-        pass
+        showerror("Error", message=traceback.format_exc())
 
 
 def main():
