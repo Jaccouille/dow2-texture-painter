@@ -349,11 +349,15 @@ class ArmyPainter(tk.Tk):
             return
         self.load_file(f.name)
 
-    def _check_path(self, path:str):
-        if not os.path.exists(path):
-            showerror(title="Unexisting path", message=f"{path} does not exist.")
-            return False
-        return True
+    def _check_batch_path(self, source:str, dest:str):
+        if source == '':
+            raise OSError("Please select a source directory.")
+        elif dest == '':
+            raise OSError("Please select a destination directory.")
+        elif not os.path.exists(source):
+            raise OSError(f"{source} does not exist.")
+        elif not os.path.exists(dest):
+            raise OSError(f"{dest} does not exist.")
 
     def _check_dif_format(self, filename:str, src_format:list):
         name, ext = os.path.splitext(filename)
@@ -361,32 +365,29 @@ class ArmyPainter(tk.Tk):
             return True
         return False
 
-
     def batch_edit(self, Event=None):
         source = self.frame_batch_tools.frame_batch_src_path.entry_value.get()
         dest = self.frame_batch_tools.frame_batch_dest_path.entry_value.get()
         dest_format = self.frame_batch_tools.dest_format.get().lower()
 
-        # Checking if source & dest exist
-        if source == '':
-            showerror(title="No source directory", message="Please select a source directory.")
-            return
-        if dest == '':
-            showerror(title="No destination directory", message="Please select a destination directory.")
-            return
-        if not self._check_path(source) or not self._check_path(dest):
-            return
+        try:
+            # Checking if source & dest exist
+            self._check_batch_path(source, dest)
 
-        src_format = self.frame_batch_tools.get_source_format_selected()
-        filenames = [filename for filename in os.listdir(source) if self._check_dif_format(filename, src_format)]
+            src_format = self.frame_batch_tools.get_source_format_selected()
+            filenames = [filename for filename in os.listdir(source) if self._check_dif_format(filename, src_format)]
 
-        self.frame_batch_tools.progress_bar["maximum"] = len(filenames)
-        for idx, filename in enumerate(filenames):
-            name, _ = os.path.splitext(filename)
-            self.load_file(f"{source}/{filename}")
-            new_filename = name + f".{dest_format}"
-            self.img_wbench.save(f"{dest}/{new_filename}")
-            self.frame_batch_tools.update_progress_bar_label(idx + 1)
+            self.frame_batch_tools.progress_bar["maximum"] = len(filenames)
+            for idx, filename in enumerate(filenames):
+                name, _ = os.path.splitext(filename)
+                self.load_file(f"{source}/{filename}")
+                new_filename = name + f".{dest_format}"
+                self.img_wbench.save(f"{dest}/{new_filename}")
+                self.frame_batch_tools.update_progress_bar_label(idx + 1)
+        except OSError as e:
+            showerror(title="Path Error", message=str(e))
+        finally:
+            self.frame_batch_tools.focus()
 
 
     def reset_workspace(self, Event=None):
