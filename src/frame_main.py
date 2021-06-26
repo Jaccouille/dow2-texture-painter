@@ -123,6 +123,9 @@ class ArmyPainter(tk.Tk):
             filemenu.add_command(
                 label="Save as", command=self.save, accelerator="Ctrl+S"
             )
+            filemenu.add_command(
+                label="Close", command=self.close, accelerator="Ctrl+E"
+            )
             filemenu.add_separator()
             filemenu.add_command(label="Exit", command=self.quit)
             menubar.add_cascade(label="File", menu=filemenu)
@@ -169,6 +172,7 @@ class ArmyPainter(tk.Tk):
         self.bind("<Control-o>", self.open_diffuse)
         self.bind("<Control-a>", self.open_channel)
         self.bind("<Control-s>", self.save)
+        self.bind("<Control-e>", self.close)
         self.bind("<Control-d>", self.batch_edit)
         self.bind("<Control-r>", self.reset_workspace)
 
@@ -222,6 +226,11 @@ class ArmyPainter(tk.Tk):
                     message='Error: wrong extension, choose an extension from the "Save as type" list',
                 )
 
+    def close(self, Event=None):
+        self.img_wbench.set_placeholder_img()
+        self.img_wbench.tem_channels = []
+        self.refresh_workspace()
+
     def refresh_workspace(self):
         """Refresh the workspace image with current settings"""
         self.img_wbench.colors = [
@@ -229,6 +238,10 @@ class ArmyPainter(tk.Tk):
         ]
         self.img_dif = ImageTk.PhotoImage(self.img_wbench.refresh_workspace())
         self.label_img_dif.config(image=self.img_dif)
+        self.img_tem = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
+        self.label_img_tem.config(image=self.img_tem)
+        self.refresh_window_size()
+
 
     def color_operation_update(self):
         color_op = self.frame_color_op_option.var.get()
@@ -300,7 +313,6 @@ class ArmyPainter(tk.Tk):
         :type filepath: str
         """
         self.img_wbench.load_diffuse_file(filepath)
-        self.img_wbench
 
         # Load associated tem file
         tem_filepath = filepath.replace("_dif.", "_tem.")
@@ -320,7 +332,6 @@ class ArmyPainter(tk.Tk):
             self.load_spec_file(spec_filepath)
 
         self.refresh_workspace()
-        self.refresh_window_size()
 
     def load_channel_packed_file(self, filepath: str):
         self.img_wbench.load_team_colour_file(filepath)
@@ -344,7 +355,7 @@ class ArmyPainter(tk.Tk):
         self.load_file(f.name)
 
     def open_channel(self, Event=None):
-        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES, title="Open channel file")
         if f is None:
             return
         self.load_file(f.name)

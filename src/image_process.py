@@ -30,14 +30,17 @@ class ImageWorkbench:
         self.tem_channels = []
         self.tem_selected = []
         self.colors = []
-        self.img_og_dif = create_placeholder_img()
-        self.img_og_tem = create_placeholder_img()
         self.brightness = 40
         self.contrast = 100
         self.apply_alpha = False
         self.apply_dirt = False
         self.apply_spec = False
         self.color_op = ColorOps.OVERLAY.value
+        self.set_placeholder_img()
+
+    def set_placeholder_img(self):
+        self.img_og_dif = create_placeholder_img()
+        self.img_og_tem = create_placeholder_img()
 
     def process_coloring(self):
         """Process image with current workspace setting
