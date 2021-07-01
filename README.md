@@ -1,5 +1,6 @@
 
 
+
 https://user-images.githubusercontent.com/7768858/124058067-f3dfa780-da28-11eb-8335-7c35456467c7.mov
 
 # Dawn of War 2 texture painter
@@ -45,6 +46,10 @@ team color texture:
 * Color 2 -> green mask
 * Color 3 -> blue mask
 * Color 4 -> alpha mask
+
+![dow2-texture-mask](https://user-images.githubusercontent.com/7768858/124062661-5fc60e00-da31-11eb-97f7-2e8f04c45974.png)
+_Using red, green and white for the coloring._
+
 
 Once you're done, you can save your edit by clicking on `File -> Save`, can save
 with the following format: PNG, JPG, BMP and TGA.
