@@ -1,3 +1,7 @@
+
+
+https://user-images.githubusercontent.com/7768858/124058067-f3dfa780-da28-11eb-8335-7c35456467c7.mov
+
 # Dawn of War 2 texture painter
 
 This is a GUI desktop application that allows the user to recolor Dawn of War 2 grayscale diffuse texture using the default army color pattern from the game.
