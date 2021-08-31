@@ -78,7 +78,11 @@ From the root directory:
 
 Run `make venv` to generate the virtual env
 
-`texture-painter` is the defined entry point to start the GUI app
+Run `source venv/bin/activate` to activate virtual env (on linux)
+
+Run `python setup.py install` to build the entry point (command used to start the app)
+
+Run `texture-painter` to start the GUI app
 
 Run the following command to generate an EXE/binary file with pyinstaller:
 
