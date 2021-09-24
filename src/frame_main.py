@@ -29,10 +29,10 @@ from src.color_pattern_handler import army_color_pattern
 from src.image_process import ImageWorkbench
 from pathlib import Path
 
-PATTERN_LIST_DEFAULT_WIDTH = 166
+from importlib import resources
 
-bundle_dir = Path(__file__).parent
-APP_ICON_PATH = bundle_dir / "assets/icon_64x64.png"
+PATTERN_LIST_DEFAULT_WIDTH = 166
+VERSION = "1.0.0"
 
 class ArmyPainter(tk.Tk):
     def __init__(self):
@@ -43,9 +43,11 @@ class ArmyPainter(tk.Tk):
         min_height = DEFAULT_IMG_SIZE + FRAME_TOOL_HEIGHT
         dimension = f"{min_width}x{min_height}"
         self.geometry(dimension)
-        self.iconphoto(False, tk.PhotoImage(file=APP_ICON_PATH))
+        with resources.path("resources", "icon_64x64.png") as icon_path:
+            self.icon_img = tk.PhotoImage(file=icon_path)
+        self.iconphoto(False, self.icon_img)
         self.minsize(min_width, min_height)
-        self.title("Army Painter")
+        self.title(f"Army Painter {VERSION}")
 
         self.img_wbench = ImageWorkbench()
 
@@ -102,7 +104,9 @@ class ArmyPainter(tk.Tk):
         self.frame_channel_select.pack(side=tk.LEFT, fill=tk.Y)
 
         # Setting sliders
-        self.frame_sliders = FrameSlider(self.frame_img_tools, relief=tk.RIDGE, bd=2)
+        self.frame_sliders = FrameSlider(
+            self.frame_img_tools, relief=tk.RIDGE, bd=2
+        )
         self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
 
     def define_menu(self):
@@ -198,7 +202,9 @@ class ArmyPainter(tk.Tk):
             bd=2,
             relief=tk.RIDGE,
         )
-        self.frame_batch_tools.iconphoto(False, tk.PhotoImage(file=APP_ICON_PATH))
+        self.frame_batch_tools.iconphoto(
+            False, self.icon_img
+        )
 
     def on_slider_update(self, value: float):
         self.img_wbench.brightness = self.frame_sliders.brightness_slider.get()
@@ -238,10 +244,11 @@ class ArmyPainter(tk.Tk):
         ]
         self.img_dif = ImageTk.PhotoImage(self.img_wbench.refresh_workspace())
         self.label_img_dif.config(image=self.img_dif)
-        self.img_tem = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
+        self.img_tem = ImageTk.PhotoImage(
+            self.img_wbench.refresh_team_colour_img()
+        )
         self.label_img_tem.config(image=self.img_tem)
         self.refresh_window_size()
-
 
     def color_operation_update(self):
         color_op = self.frame_color_op_option.var.get()
@@ -249,7 +256,9 @@ class ArmyPainter(tk.Tk):
         self.refresh_workspace()
 
     def on_apply_alpha_toggle(self):
-        self.img_wbench.apply_alpha = self.frame_channel_select.apply_alpha.get()
+        self.img_wbench.apply_alpha = (
+            self.frame_channel_select.apply_alpha.get()
+        )
         self.refresh_workspace()
 
     def on_dirt_toggle(self):
@@ -264,7 +273,9 @@ class ArmyPainter(tk.Tk):
         """Refresh window size using current images width"""
         img_dif_size = self.img_wbench.img_workspace.size
         img_tem_size = self.img_wbench.img_og_tem.size
-        new_width = img_dif_size[0] + img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
+        new_width = (
+            img_dif_size[0] + img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
+        )
 
         # Assuming both image got same size
         new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
@@ -297,12 +308,16 @@ class ArmyPainter(tk.Tk):
         :param Event: event triggered from widget, defaults to None
         :type Event: [type], optional
         """
-        self.img_wbench.tem_selected = self.frame_channel_select.lb.curselection()
+        self.img_wbench.tem_selected = (
+            self.frame_channel_select.lb.curselection()
+        )
         # TODO: refactor lazy check with is load batch
         # Did to avoid exception in ImageWorkbench processing
         if self.img_wbench.apply_alpha:
             self.refresh_workspace()
-        self.img = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
+        self.img = ImageTk.PhotoImage(
+            self.img_wbench.refresh_team_colour_img()
+        )
         self.label_img_tem.config(image=self.img)
 
     def load_file(self, filepath: str):
@@ -345,7 +360,9 @@ class ArmyPainter(tk.Tk):
         self.img_wbench.load_specular_file(filepath)
 
     def open_diffuse(self, Event=None):
-        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
+        f = filedialog.askopenfile(
+            initialdir=os.curdir, filetypes=OPEN_FILETYPES
+        )
         if f is None:
             return
         # Saving the filename just to set it as default file name on the save
@@ -355,22 +372,26 @@ class ArmyPainter(tk.Tk):
         self.load_file(f.name)
 
     def open_channel(self, Event=None):
-        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES, title="Open channel file")
+        f = filedialog.askopenfile(
+            initialdir=os.curdir,
+            filetypes=OPEN_FILETYPES,
+            title="Open channel file",
+        )
         if f is None:
             return
         self.load_file(f.name)
 
-    def _check_batch_path(self, source:str, dest:str):
-        if source == '':
+    def _check_batch_path(self, source: str, dest: str):
+        if source == "":
             raise OSError("Please select a source directory.")
-        elif dest == '':
+        elif dest == "":
             raise OSError("Please select a destination directory.")
         elif not os.path.exists(source):
             raise OSError(f"{source} does not exist.")
         elif not os.path.exists(dest):
             raise OSError(f"{dest} does not exist.")
 
-    def _check_dif_format(self, filename:str, src_format:list):
+    def _check_dif_format(self, filename: str, src_format: list):
         name, ext = os.path.splitext(filename)
         if ext[1:] in src_format and name.endswith("_dif"):
             return True
@@ -386,7 +407,11 @@ class ArmyPainter(tk.Tk):
             self._check_batch_path(source, dest)
 
             src_format = self.frame_batch_tools.get_source_format_selected()
-            filenames = [filename for filename in os.listdir(source) if self._check_dif_format(filename, src_format)]
+            filenames = [
+                filename
+                for filename in os.listdir(source)
+                if self._check_dif_format(filename, src_format)
+            ]
 
             self.frame_batch_tools.progress_bar["maximum"] = len(filenames)
             for idx, filename in enumerate(filenames):
@@ -400,7 +425,6 @@ class ArmyPainter(tk.Tk):
         finally:
             self.frame_batch_tools.focus()
 
-
     def reset_workspace(self, Event=None):
         self.img_wbench.img_workspace = self.img_wbench.img_og_dif
         for color_box in self.frame_color_chooser.color_boxes:
@@ -413,7 +437,9 @@ class ArmyPainter(tk.Tk):
 
     def save_pattern(self):
         pattern_name = askstring("Pattern Name", "Choose a pattern name")
-        colors = [color["bg"] for color in self.frame_color_chooser.color_boxes]
+        colors = [
+            color["bg"] for color in self.frame_color_chooser.color_boxes
+        ]
         src.color_pattern_handler.save(name=pattern_name, colors=colors)
         self.frame_army_pattern.load_pattern_list()
         self.frame_army_pattern.lb.selection_set(first="end", last="end")

@@ -4,6 +4,7 @@ SHELL := /bin/zsh
 .DEFAULT_GOAL := help
 
 APP_DIR = src
+RES_DIR = resources
 
 test:
 	. venv/bin/activate
@@ -15,6 +16,7 @@ venv:
 	venv/bin/pip install -e .
 
 run-dev: ## launch main frame entry point
+	python setup.py install
 	texture-painter
 
 # On windows, use ";" separator instead of ":" for the --add-data args
@@ -34,8 +36,8 @@ build-bin-folder: ## build binary folder
 
 build-bin-file: ## build binary
 	pyinstaller --name "dow2-texture-painter" --onefile --windowed \
-	--noconfirm --add-data "$(APP_DIR)/data:data" \
-	--add-data "$(APP_DIR)/assets:assets" \
+	--noconfirm --add-data "$(APP_DIR)/$(RES_DIR):$(RES_DIR)" \
+	--add-data "$(APP_DIR)/$(RES_DIR):$(RES_DIR)" \
 	--hidden-import='PIL._tkinter_finder' $(APP_DIR)/frame_main.py
 
 # build-spec:

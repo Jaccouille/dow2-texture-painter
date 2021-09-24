@@ -5,15 +5,15 @@ import json
 from pathlib import Path
 import sys
 
+#try:
+from importlib import resources
+#except ImportError:
+ #   import importlib_resources as resources
 
-if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
-    bundle_dir = Path(sys._MEIPASS)
-else:
-    bundle_dir = Path(__file__).parent
-
-
-DEFAULT_PATTERN_PATH = bundle_dir / "data/default_pattern.ini"
-ARMY_PATTERN_PATH = bundle_dir / "data/army_pattern.json"
+with resources.path("resources", "default_pattern.ini") as path :
+    DEFAULT_PATTERN_PATH = path
+with resources.path("resources", "army_pattern.json") as path :
+    ARMY_PATTERN_PATH = path
 
 config = configparser.ConfigParser()
 config.read(DEFAULT_PATTERN_PATH)
