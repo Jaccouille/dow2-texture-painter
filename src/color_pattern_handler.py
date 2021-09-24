@@ -2,8 +2,6 @@ import configparser
 from collections import OrderedDict
 from src.constant import DOW2_MATERIALS
 import json
-from pathlib import Path
-import sys
 
 # try:
 from importlib import resources

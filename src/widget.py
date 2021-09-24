@@ -182,7 +182,7 @@ class BatchEditTopLevel(tk.Toplevel):
         source_format_selected = [
             chk_btn.cget("text").lower()
             for chk_btn, state in self.source_format_list
-            if state.get() == True
+            if state.get()
         ]
         return source_format_selected
 

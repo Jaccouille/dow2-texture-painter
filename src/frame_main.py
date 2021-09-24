@@ -22,7 +22,6 @@ from src.constant import (
     FRAME_TOOL_HEIGHT,
     SAVE_FILETYPES,
     OPEN_FILETYPES,
-    OPEN_EXT_LIST,
 )
 import src.color_pattern_handler
 from src.color_pattern_handler import army_color_pattern
@@ -225,10 +224,11 @@ class ArmyPainter(tk.Tk):
         if filename:
             try:
                 self.img_wbench.save(filename)
-            except KeyError as error:
+            except KeyError:
                 tk.messagebox.showerror(
                     title="Wrong File Extension",
-                    message='Error: wrong extension, choose an extension from the "Save as type" list',
+                    message='Error: wrong extension,' +
+                            'choose an extension from the "Save as type" list',
                 )
 
     def close(self, Event=None):
@@ -287,7 +287,7 @@ class ArmyPainter(tk.Tk):
         # TODO: Refactor following code so with frame color class
         elif type(Event.widget.master) is FramePatternList:
             # TODO: This function is triggered upon listbox selection set.
-            # Is this intended? This cause issue with the reset_workspace function
+            # Is this intended? It cause issue with the reset_workspace function
             # triggering the event when the pattern listbox has no selection
             if len(self.frame_army_pattern.lb.curselection()) == 0:
                 return
@@ -365,8 +365,8 @@ class ArmyPainter(tk.Tk):
         if f is None:
             return
         # Saving the filename just to set it as default file name on the save
-        # file dialog, truncate the file extension because it is automatically set
-        # by the save dialog
+        # file dialog, truncate the file extension because it is automatically
+        # set by the save dialog
         self.og_filename = Path(f.name).name.split(".")[0]
         self.load_file(f.name)
 
