@@ -32,7 +32,7 @@ from pathlib import Path
 from importlib import resources
 
 PATTERN_LIST_DEFAULT_WIDTH = 166
-VERSION = "1.0.0"
+VERSION = "0.1"
 
 class ArmyPainter(tk.Tk):
     def __init__(self):
