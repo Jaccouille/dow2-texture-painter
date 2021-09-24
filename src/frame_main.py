@@ -34,6 +34,7 @@ from importlib import resources
 PATTERN_LIST_DEFAULT_WIDTH = 166
 VERSION = "0.1"
 
+
 class ArmyPainter(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -202,9 +203,7 @@ class ArmyPainter(tk.Tk):
             bd=2,
             relief=tk.RIDGE,
         )
-        self.frame_batch_tools.iconphoto(
-            False, self.icon_img
-        )
+        self.frame_batch_tools.iconphoto(False, self.icon_img)
 
     def on_slider_update(self, value: float):
         self.img_wbench.brightness = self.frame_sliders.brightness_slider.get()

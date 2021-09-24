@@ -5,14 +5,15 @@ import json
 from pathlib import Path
 import sys
 
-#try:
+# try:
 from importlib import resources
-#except ImportError:
- #   import importlib_resources as resources
 
-with resources.path("resources", "default_pattern.ini") as path :
+# except ImportError:
+#   import importlib_resources as resources
+
+with resources.path("resources", "default_pattern.ini") as path:
     DEFAULT_PATTERN_PATH = path
-with resources.path("resources", "army_pattern.json") as path :
+with resources.path("resources", "army_pattern.json") as path:
     ARMY_PATTERN_PATH = path
 
 config = configparser.ConfigParser()
