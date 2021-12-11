@@ -1,0 +1,88 @@
+from PIL import (
+    Image,
+)
+import tkinter as tk
+from pathlib import Path
+import os
+
+
+def get_tem_filenames(path: Path):
+    def find_tem_files(filenames: list) -> dict:
+        files_dict = {}
+        """
+            Dawn of War 1 team colour texture used for the army painter are named
+            with the following pattern :
+            {unit_name}_Primary -> First color/Red mask
+            {unit_name}_Secondary -> Second color/Blue mask
+            {unit_name}_Trim -> Green color/Green mask
+            {unit_name}_Weapon -> Fourth color/Alpha mask]
+
+        :return: a dict containing unit name prefix as a key to access a nested
+            dict containing the file path as a value an its suffix as key
+            e.g {'space_marine_unit':
+                    {
+                    'Primary': 'space_marine_unit_Primary.tga',
+                    'Secondary': 'space_marine_unit_Secondary.tga',
+                    'Trim': 'space_marine_unit_Trim.tga',
+                    'Weapon': 'space_marine_unit_Weapon.tga'
+                    }
+                }
+        :rtype: nested dict
+        """
+        file_suffix = ["Primary", "Secondary", "Trim", "Weapon"]
+        for file in filenames:
+            # removing the extension from the string
+            f_no_ext = file.rsplit(".", 1)[0]
+
+            # Get the filename suffix, expecting: (Primary | Secondary | Trim | Weapon)
+            f_suffix = f_no_ext.rsplit("_", 1)[-1]
+            if f_suffix in file_suffix:
+
+                # Get the filename prefix, expecting a unit name
+                f_prefix = f_no_ext.rsplit("_", 1)[0]
+
+                # Register unit name as a key to a dictionary containing the filename
+                # as a value and their suffix as key
+                if not f_prefix in files_dict:
+                    files_dict[f_prefix] = {}
+                files_dict[f_prefix][f_suffix] = file
+        return files_dict
+
+    filenames = [filename for filename in os.listdir(path)]
+    return find_tem_files(filenames)
+
+
+def convert_tem_texture(tem_textures: dict, path: Path):
+    # TODO: Find a way to handle icon banner pasted on textures
+    # TODO: Check the size of Dawn of War 1 unit textures
+    # can the different textures for the same unit differ in size?
+
+    bands = []
+    for k, v in tem_textures.items():
+        img = Image.open(path / v)
+
+        # tem textures are grayscaled images, therefore we can convert them
+        # to 8 bit pixel format, each image will be used as a band/chan
+        # upon Image.merge() function call
+        img.convert("L")
+        white_chan = img.getchannel(0)
+
+        # Each gray pixel has to be set to 255, this is how dawn of war 2
+        # tem textures were made, if not, the blending within texture painter
+        # will be darken
+        colored_mask = Image.eval(white_chan, lambda x: 255 if x >= 25 else 0)
+        bands.append(colored_mask)
+
+        # Debug
+        # colored_mask.save(path / ("test_" + k + ".tga"), "tga")
+
+    return Image.merge(mode="RGBA", bands=bands)
+
+
+if __name__ == "__main__":
+    # Put test sample texture in /assets/dow1 directory
+    path = Path.cwd() / "assets/dow1"
+    files_dict = get_tem_filenames(path)
+    for k in files_dict.keys():
+        result = convert_tem_texture(files_dict.get(k), path)
+        result.save(path / ("space_marine_unit_tem" + ".tga"), "tga")
