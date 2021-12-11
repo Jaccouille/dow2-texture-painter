@@ -25,7 +25,7 @@ run-dev: ## launch main frame
 # --icon option isn't working alongisde --name option
 build-bin-folder-win: ## build binary folder for windows
 	pyinstaller --name $(APP_NAME)-$(APP_VERSION) --windowed --noconfirm  \
-	--add-data "$(APP_DIR)/$(RES_DIR):$(RES_DIR)" \
+	--add-data "$(APP_DIR)/$(RES_DIR);$(RES_DIR)" \
 	--icon="$(APP_DIR)/$(RES_DIR)/icon_64x64.ico" \
 	--add-data "readme.md;." --hidden-import='PIL._tkinter_finder' \
 	$(APP_DIR)/frame_main.py/
