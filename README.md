@@ -60,7 +60,10 @@ select them on the list located bottom right.
 You can save your current color pattern by clicking on `Save pattern`.
 
 You can apply dirt & specular texture by clicking on `Edit -> Apply dirt/specular`,
-those textures must be in the same folder as the diffuse ones.
+those textures must be in the same folder as the diffuse ones and their filenames must
+follow the following pattern.
+* {unit_name}_drt.dds -> dirt
+* {unit_name}_spec.dds -> specular
 
 You can replace color by transparency with selecting the color mask in the list
 and checking the  `Apply alpha` box.
