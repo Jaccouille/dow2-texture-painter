@@ -7,6 +7,32 @@ import os
 
 
 def get_tem_filenames(path: Path):
+    file_suffix = set(["Primary", "Secondary", "Trim", "Weapon"])
+
+    def check_if_tem_exist(files_dict: dict):
+        """Check if the 4 files neccessary to construct packed tem files exists
+
+        :param files_dict: a dict containing unit name prefix as a key
+            to access a nested dict containing the file path as a value
+            an its suffix as key,
+            e.g {'space_marine_unit':
+                    {
+                    'Primary': 'space_marine_unit_Primary.tga',
+                    'Secondary': 'space_marine_unit_Secondary.tga',
+                    'Trim': 'space_marine_unit_Trim.tga',
+                    'Weapon': 'space_marine_unit_Weapon.tga'
+                    }
+                }
+        :raises FileNotFoundError: Missing tem textures
+        """
+        for v in files_dict.values():
+            diff = list(set(v.keys()) - file_suffix)
+            if len(diff) > 0:
+                filetype_missing = ", ".join(diff)
+                raise FileNotFoundError(
+                    f"Missing {filetype_missing} tem textures files"
+                )
+
     def find_tem_files(filenames: list) -> dict:
         files_dict = {}
         """
@@ -29,11 +55,9 @@ def get_tem_filenames(path: Path):
                 }
         :rtype: nested dict
         """
-        file_suffix = ["Primary", "Secondary", "Trim", "Weapon"]
         for file in filenames:
             # removing the extension from the string
             f_no_ext = file.rsplit(".", 1)[0]
-
             # Get the filename suffix, expecting: (Primary | Secondary | Trim | Weapon)
             f_suffix = f_no_ext.rsplit("_", 1)[-1]
             if f_suffix in file_suffix:
@@ -46,6 +70,7 @@ def get_tem_filenames(path: Path):
                 if not f_prefix in files_dict:
                     files_dict[f_prefix] = {}
                 files_dict[f_prefix][f_suffix] = file
+        check_if_tem_exist(files_dict)
         return files_dict
 
     filenames = [filename for filename in os.listdir(path)]
@@ -57,7 +82,12 @@ def convert_tem_texture(tem_textures: dict, path: Path):
     # TODO: Check the size of Dawn of War 1 unit textures
     # can the different textures for the same unit differ in size?
 
+    black_pixel_threshold = 25
     bands = []
+    assert (
+        len(tem_textures) == 4,
+        f"There should be 4 tem textures, found only {len(tem_textures)}",
+    )
     for k, v in tem_textures.items():
         img = Image.open(path / v)
 
@@ -70,7 +100,9 @@ def convert_tem_texture(tem_textures: dict, path: Path):
         # Each gray pixel has to be set to 255, this is how dawn of war 2
         # tem textures were made, if not, the blending within texture painter
         # will be darken
-        colored_mask = Image.eval(white_chan, lambda x: 255 if x >= 25 else 0)
+        colored_mask = Image.eval(
+            white_chan, lambda x: 255 if x >= black_pixel_threshold else 0
+        )
         bands.append(colored_mask)
 
         # Debug
@@ -79,10 +111,13 @@ def convert_tem_texture(tem_textures: dict, path: Path):
     return Image.merge(mode="RGBA", bands=bands)
 
 
-if __name__ == "__main__":
+def local_test():
     # Put test sample texture in /assets/dow1 directory
     path = Path.cwd() / "assets/dow1"
     files_dict = get_tem_filenames(path)
     for k in files_dict.keys():
         result = convert_tem_texture(files_dict.get(k), path)
         result.save(path / ("space_marine_unit_tem" + ".tga"), "tga")
+
+if __name__ == "__main__":
+    local_test()
