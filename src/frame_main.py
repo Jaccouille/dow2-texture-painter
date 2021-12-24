@@ -228,8 +228,8 @@ class ArmyPainter(tk.Tk):
             except KeyError:
                 tk.messagebox.showerror(
                     title="Wrong File Extension",
-                    message='Error: wrong extension,' +
-                            'choose an extension from the "Save as type" list',
+                    message="Error: wrong extension,"
+                    + 'choose an extension from the "Save as type" list',
                 )
 
     def close(self, Event=None):
@@ -288,7 +288,7 @@ class ArmyPainter(tk.Tk):
         # TODO: Refactor following code so with frame color class
         elif type(Event.widget.master) is FramePatternList:
             # TODO: This function is triggered upon listbox selection set.
-            # Is this intended? It cause issue with the reset_workspace function
+            # Is this intended? It cause issue with the reset_workspace func
             # triggering the event when the pattern listbox has no selection
             if len(self.frame_army_pattern.lb.curselection()) == 0:
                 return

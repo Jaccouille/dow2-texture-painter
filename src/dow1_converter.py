@@ -74,8 +74,8 @@ def get_tem_filenames(path: Path, src_format: str):
         return files_dict
 
     filenames = [
-        filename for filename
-        in os.listdir(path)
+        filename
+        for filename in os.listdir(path)
         if filename.endswith(src_format)
     ]
     return find_tem_files(filenames)
@@ -88,8 +88,9 @@ def convert_tem_texture(tem_textures: dict, path: Path):
 
     black_pixel_threshold = 25
     bands = []
-    assert len(tem_textures) == 4, \
-        f"There should be 4 tem textures, found only {len(tem_textures)}"
+    assert (
+        len(tem_textures) == 4
+    ), f"There should be 4 tem textures, found only {len(tem_textures)}"
 
     for k, v in tem_textures.items():
         img = Image.open(path / v)
