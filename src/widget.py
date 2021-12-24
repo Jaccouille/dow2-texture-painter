@@ -174,9 +174,9 @@ class FramePatternList(tk.Frame):
 class BatchEditTopLevel(tk.Toplevel):
     def __init__(self, master=None, cnf={}, **kw):
         super(BatchEditTopLevel, self).__init__(master=master, cnf={}, **kw)
-
         self.resizable(width=False, height=False)
         self.initialize()
+        self.title("Batch Edit")
 
     def get_source_format_selected(self):
         source_format_selected = [
@@ -228,6 +228,12 @@ class BatchEditTopLevel(tk.Toplevel):
             self.frame_destination_format,
             text="Process Batch Edit",
             command=self._root().batch_edit,
+        ).pack(side=tk.LEFT)
+
+        tk.Button(
+            self.frame_destination_format,
+            text="Process Batch Convert",
+            command=self._root().batch_convert,
         ).pack(side=tk.LEFT)
 
         def _select_folder(folder_path, Event=None):

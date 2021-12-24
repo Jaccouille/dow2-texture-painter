@@ -24,6 +24,7 @@ from src.constant import (
     OPEN_FILETYPES,
 )
 import src.color_pattern_handler
+from src.dow1_converter import get_tem_filenames, convert_tem_texture
 from src.color_pattern_handler import army_color_pattern
 from src.image_process import ImageWorkbench
 from pathlib import Path
@@ -396,33 +397,48 @@ class ArmyPainter(tk.Tk):
             return True
         return False
 
-    def batch_edit(self, Event=None):
-        source = self.frame_batch_tools.frame_batch_src_path.entry_value.get()
+    def get_batch_edit_input(self):
+        src = self.frame_batch_tools.frame_batch_src_path.entry_value.get()
         dest = self.frame_batch_tools.frame_batch_dest_path.entry_value.get()
         dest_format = self.frame_batch_tools.dest_format.get().lower()
-
         try:
             # Checking if source & dest exist
-            self._check_batch_path(source, dest)
-
+            self._check_batch_path(src, dest)
             src_format = self.frame_batch_tools.get_source_format_selected()
-            filenames = [
-                filename
-                for filename in os.listdir(source)
-                if self._check_dif_format(filename, src_format)
-            ]
-
-            self.frame_batch_tools.progress_bar["maximum"] = len(filenames)
-            for idx, filename in enumerate(filenames):
-                name, _ = os.path.splitext(filename)
-                self.load_file(f"{source}/{filename}")
-                new_filename = name + f".{dest_format}"
-                self.img_wbench.save(f"{dest}/{new_filename}")
-                self.frame_batch_tools.update_progress_bar_label(idx + 1)
         except OSError as e:
             showerror(title="Path Error", message=str(e))
         finally:
-            self.frame_batch_tools.focus()
+            return (src, dest, dest_format, src_format)
+
+    def batch_convert(self, Event=None):
+        src, dest, dest_format, src_format = self.get_batch_edit_input()
+        files_dict = get_tem_filenames(src, src_format)
+        self.frame_batch_tools.progress_bar["maximum"] = len(files_dict)
+        for idx, k in enumerate(files_dict.keys()):
+            result = convert_tem_texture(files_dict.get(k), dest)
+            filename = k.replace("default", "tem", 1)
+            result.save(dest / (f"{filename}.{dest_format}"), dest_format)
+            self.frame_batch_tools.update_progress_bar_label(idx + 1)
+
+        self.frame_batch_tools.focus()
+
+    def batch_edit(self, Event=None):
+        src, dest, dest_format, src_format = self.get_batch_edit_input()
+        filenames = [
+            filename
+            for filename in os.listdir(src)
+            if self._check_dif_format(filename, src_format)
+        ]
+
+        self.frame_batch_tools.progress_bar["maximum"] = len(filenames)
+        for idx, filename in enumerate(filenames):
+            name, _ = os.path.splitext(filename)
+            self.load_file(f"{src}/{filename}")
+            new_filename = name + f".{dest_format}"
+            self.img_wbench.save(f"{dest}/{new_filename}")
+            self.frame_batch_tools.update_progress_bar_label(idx + 1)
+
+        self.frame_batch_tools.focus()
 
     def reset_workspace(self, Event=None):
         self.img_wbench.img_workspace = self.img_wbench.img_og_dif
