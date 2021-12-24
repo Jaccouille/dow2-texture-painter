@@ -6,7 +6,7 @@ from pathlib import Path
 import os
 
 
-def get_tem_filenames(path: Path):
+def get_tem_filenames(path: Path, src_format: str):
     file_suffix = set(["Primary", "Secondary", "Trim", "Weapon"])
 
     def check_if_tem_exist(files_dict: dict):
@@ -73,7 +73,11 @@ def get_tem_filenames(path: Path):
         check_if_tem_exist(files_dict)
         return files_dict
 
-    filenames = [filename for filename in os.listdir(path)]
+    filenames = [
+        filename for filename
+        in os.listdir(path)
+        if filename.endswith(src_format)
+    ]
     return find_tem_files(filenames)
 
 
@@ -84,10 +88,9 @@ def convert_tem_texture(tem_textures: dict, path: Path):
 
     black_pixel_threshold = 25
     bands = []
-    assert (
-        len(tem_textures) == 4,
-        f"There should be 4 tem textures, found only {len(tem_textures)}",
-    )
+    assert len(tem_textures) == 4, \
+        f"There should be 4 tem textures, found only {len(tem_textures)}"
+
     for k, v in tem_textures.items():
         img = Image.open(path / v)
 
@@ -111,13 +114,19 @@ def convert_tem_texture(tem_textures: dict, path: Path):
     return Image.merge(mode="RGBA", bands=bands)
 
 
+def exec_convert(path: Path, src_format: str, dest_format: str):
+    files_dict = get_tem_filenames(path, src_format)
+    for k in files_dict.keys():
+        result = convert_tem_texture(files_dict.get(k), path)
+        filename = k.replace("default", "tem", 1)
+        result.save(path / (f"{filename}.{dest_format}"), dest_format)
+
+
 def local_test():
     # Put test sample texture in /assets/dow1 directory
     path = Path.cwd() / "assets/dow1"
-    files_dict = get_tem_filenames(path)
-    for k in files_dict.keys():
-        result = convert_tem_texture(files_dict.get(k), path)
-        result.save(path / ("space_marine_unit_tem" + ".tga"), "tga")
+    exec_convert(path, ".tga", "tga")
+
 
 if __name__ == "__main__":
     local_test()
