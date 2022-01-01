@@ -5,7 +5,7 @@ from PIL import (
 import tkinter as tk
 from tkinter import filedialog
 from tkinter.simpledialog import askstring
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror, showwarning
 import traceback
 from src.widget import (
     FrameColorChooser,
@@ -105,9 +105,7 @@ class ArmyPainter(tk.Tk):
         self.frame_channel_select.pack(side=tk.LEFT, fill=tk.Y)
 
         # Setting sliders
-        self.frame_sliders = FrameSlider(
-            self.frame_img_tools, relief=tk.RIDGE, bd=2
-        )
+        self.frame_sliders = FrameSlider(self.frame_img_tools, relief=tk.RIDGE, bd=2)
         self.frame_sliders.pack(side=tk.LEFT, fill=tk.Y)
 
     def define_menu(self):
@@ -244,9 +242,7 @@ class ArmyPainter(tk.Tk):
         ]
         self.img_dif = ImageTk.PhotoImage(self.img_wbench.refresh_workspace())
         self.label_img_dif.config(image=self.img_dif)
-        self.img_tem = ImageTk.PhotoImage(
-            self.img_wbench.refresh_team_colour_img()
-        )
+        self.img_tem = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
         self.label_img_tem.config(image=self.img_tem)
         self.refresh_window_size()
 
@@ -256,9 +252,7 @@ class ArmyPainter(tk.Tk):
         self.refresh_workspace()
 
     def on_apply_alpha_toggle(self):
-        self.img_wbench.apply_alpha = (
-            self.frame_channel_select.apply_alpha.get()
-        )
+        self.img_wbench.apply_alpha = self.frame_channel_select.apply_alpha.get()
         self.refresh_workspace()
 
     def on_dirt_toggle(self):
@@ -273,9 +267,7 @@ class ArmyPainter(tk.Tk):
         """Refresh window size using current images width"""
         img_dif_size = self.img_wbench.img_workspace.size
         img_tem_size = self.img_wbench.img_og_tem.size
-        new_width = (
-            img_dif_size[0] + img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
-        )
+        new_width = img_dif_size[0] + img_tem_size[0] + PATTERN_LIST_DEFAULT_WIDTH
 
         # Assuming both image got same size
         new_height = img_dif_size[1] + FRAME_TOOL_HEIGHT
@@ -308,16 +300,12 @@ class ArmyPainter(tk.Tk):
         :param Event: event triggered from widget, defaults to None
         :type Event: [type], optional
         """
-        self.img_wbench.tem_selected = (
-            self.frame_channel_select.lb.curselection()
-        )
+        self.img_wbench.tem_selected = self.frame_channel_select.lb.curselection()
         # TODO: refactor lazy check with is load batch
         # Did to avoid exception in ImageWorkbench processing
         if self.img_wbench.apply_alpha:
             self.refresh_workspace()
-        self.img = ImageTk.PhotoImage(
-            self.img_wbench.refresh_team_colour_img()
-        )
+        self.img = ImageTk.PhotoImage(self.img_wbench.refresh_team_colour_img())
         self.label_img_tem.config(image=self.img)
 
     def load_file(self, filepath: str):
@@ -360,9 +348,7 @@ class ArmyPainter(tk.Tk):
         self.img_wbench.load_specular_file(filepath)
 
     def open_diffuse(self, Event=None):
-        f = filedialog.askopenfile(
-            initialdir=os.curdir, filetypes=OPEN_FILETYPES
-        )
+        f = filedialog.askopenfile(initialdir=os.curdir, filetypes=OPEN_FILETYPES)
         if f is None:
             return
         # Saving the filename just to set it as default file name on the save
@@ -398,8 +384,8 @@ class ArmyPainter(tk.Tk):
         return False
 
     def get_batch_edit_input(self):
-        src = self.frame_batch_tools.frame_batch_src_path.entry_value.get()
-        dest = self.frame_batch_tools.frame_batch_dest_path.entry_value.get()
+        src = Path(self.frame_batch_tools.frame_batch_src_path.entry_value.get())
+        dest = Path(self.frame_batch_tools.frame_batch_dest_path.entry_value.get())
         dest_format = self.frame_batch_tools.dest_format.get().lower()
         try:
             # Checking if source & dest exist
@@ -414,12 +400,19 @@ class ArmyPainter(tk.Tk):
         src, dest, dest_format, src_format = self.get_batch_edit_input()
         files_dict = get_tem_filenames(src, src_format)
         self.frame_batch_tools.progress_bar["maximum"] = len(files_dict)
+        self.frame_batch_tools.update_progress_bar_label(0)
         for idx, k in enumerate(files_dict.keys()):
-            result = convert_tem_texture(files_dict.get(k), dest)
+            try:
+                result = convert_tem_texture(files_dict.get(k), dest)
+            except ValueError:
+                showwarning(
+                    title="Warning missing textures",
+                    text=f"Ignored {k} as it do not posses 3 or 4 tem textures",
+                )
+                continue
             filename = k.replace("default", "tem", 1)
             result.save(dest / (f"{filename}.{dest_format}"), dest_format)
             self.frame_batch_tools.update_progress_bar_label(idx + 1)
-
         self.frame_batch_tools.focus()
 
     def batch_edit(self, Event=None):
@@ -431,6 +424,7 @@ class ArmyPainter(tk.Tk):
         ]
 
         self.frame_batch_tools.progress_bar["maximum"] = len(filenames)
+        self.frame_batch_tools.update_progress_bar_label(0)
         for idx, filename in enumerate(filenames):
             name, _ = os.path.splitext(filename)
             self.load_file(f"{src}/{filename}")
@@ -452,9 +446,7 @@ class ArmyPainter(tk.Tk):
 
     def save_pattern(self):
         pattern_name = askstring("Pattern Name", "Choose a pattern name")
-        colors = [
-            color["bg"] for color in self.frame_color_chooser.color_boxes
-        ]
+        colors = [color["bg"] for color in self.frame_color_chooser.color_boxes]
         src.color_pattern_handler.save(name=pattern_name, colors=colors)
         self.frame_army_pattern.load_pattern_list()
         self.frame_army_pattern.lb.selection_set(first="end", last="end")
