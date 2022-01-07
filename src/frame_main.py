@@ -319,7 +319,8 @@ class ArmyPainter(tk.Tk):
 
         # Load associated tem file
         tem_filepath = filepath.replace("_dif.", "_tem.")
-        if os.path.isfile(tem_filepath):
+        if os.path.isfile(tem_filepath) and tem_filepath != filepath:
+            print(tem_filepath)
             self.load_channel_packed_file(tem_filepath)
         else:
             self.open_channel()
@@ -365,7 +366,7 @@ class ArmyPainter(tk.Tk):
         )
         if f is None:
             return
-        self.load_file(f.name)
+        self.load_channel_packed_file(f.name)
 
     def _check_batch_path(self, source: str, dest: str):
         if source == "":
