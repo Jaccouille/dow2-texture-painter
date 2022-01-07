@@ -80,7 +80,7 @@ def convert_tem_texture(tem_textures: dict, path: Path):
     # TODO: Check the size of Dawn of War 1 unit textures
     # can the different textures for the same unit differ in size?
 
-    black_pixel_threshold = 25
+    black_pixel_threshold = 12
     bands = []
 
     if len(tem_textures) != 4:
