@@ -76,6 +76,17 @@ the original diffuse texture. Batch edit tool does not process subfolder.
 Batch edit only works for diffuse texture ending with "_dif", such as {unit_name}_dif.dds,
 because it's the name format for Dawn of War 2 diffuse texture.
 
+## Dawn of War 1 Texture
+Dawn of War 1 uses a different format to store their tem textures, the 4 masks are
+stored in a RTX file, once you extract them with a third party tool, you can merge
+them into a single file using the batch tool editor. The converted texture can then
+be used to color Dawn of War 1 diffuse grayscale texture.
+
+This tool is experimental and only process files from a folder in a "batch" manner.
+
+Click `Tools` -> `Batch Edit Tools` -> `Process Batch Convert` to convert Dawn of War 1
+tem textures to Dawn of War 2 tem format.
+
 ## Developing
 From the root directory:
 
