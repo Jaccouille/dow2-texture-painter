@@ -9,9 +9,9 @@ from PIL import (
 from src.constant import DEFAULT_IMG_SIZE, ColorOps
 
 
-def create_placeholder_img(text="Image PlaceHolder"):
+def create_placeholder_img(text="Image PlaceHolder", mode="RGBA"):
     img = Image.new(
-        mode="RGBA", size=(DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE), color="gray"
+        mode=mode, size=(DEFAULT_IMG_SIZE, DEFAULT_IMG_SIZE), color="gray"
     )
     d1 = ImageDraw.Draw(img)
     d1.text(xy=(90, 128), fill="black", text=text)
@@ -36,8 +36,8 @@ class ImageWorkbench:
         self.set_placeholder_img()
 
     def set_placeholder_img(self):
-        self.img_og_dif = create_placeholder_img("Select Diffuse Texture")
-        self.img_og_tem = create_placeholder_img("Select Channel Texture")
+        self.img_og_dif = create_placeholder_img("Select Diffuse Texture", "RGBA")
+        self.img_og_tem = create_placeholder_img("Select Channel Texture", "L")
 
     def process_coloring(self):
         """Process image with current workspace setting"""
