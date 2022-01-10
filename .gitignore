@@ -123,6 +123,8 @@ zeprofile_project/backend_ui/node_modules
 *.dds
 *.blp
 *.mdx
+*.bmp
+*.jpg
 
 # Allow icon file
 !icon_64x64.png
