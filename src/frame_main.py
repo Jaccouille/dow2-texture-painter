@@ -394,7 +394,7 @@ class ArmyPainter(tk.Tk):
             src_format = self.frame_batch_tools.get_source_format_selected()
         except OSError as e:
             showerror(title="Path Error", message=str(e))
-        finally:
+        else:
             return (src, dest, dest_format, src_format)
 
     def batch_convert(self, Event=None):

@@ -134,4 +134,7 @@ class ImageWorkbench:
         self.img_spec = Image.open(filepath)
 
     def save(self, filepath: str):
-        self.img_workspace.save(filepath)
+        if filepath.endswith(".jpg"):
+            self.img_workspace.convert("RGB").save(filepath)
+        else:
+            self.img_workspace.save(filepath)
