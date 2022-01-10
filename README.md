@@ -78,7 +78,7 @@ because it's the name format for Dawn of War 2 diffuse texture.
 
 ## Dawn of War 1 Texture
 Dawn of War 1 uses a different format to store their tem textures, the 4 masks are
-stored in a RTX file, once you extract them with a third party tool, you can merge
+separated into individual file stored in a RTX file, once you extract them with a third party tool, you can merge
 them into a single file using the batch tool editor. The converted texture can then
 be used to color Dawn of War 1 diffuse grayscale texture.
 
@@ -87,7 +87,12 @@ This tool is experimental and only process files from a folder in a "batch" mann
 Click `Tools` -> `Batch Edit Tools` -> `Process Batch Convert` to convert Dawn of War 1
 tem textures to Dawn of War 2 tem format.
 
+![example4](https://user-images.githubusercontent.com/7768858/148760310-08c01d18-182b-4680-a092-9e7689f4cb93.jpg)
+
+Dawn of War 1 Trim 2 & Eye coloring aren't handled yet.
+
 ## Developing
+
 From the root directory:
 
 Run `make venv` to generate the virtual env
